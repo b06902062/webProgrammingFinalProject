@@ -16,7 +16,9 @@ const midiDispaly = e => {
 function App() {
   /***** Audio Playing *****/
   const [initNotes, setInitNotes] = useState([])
+  const [initPianoroll, setInitPianoroll] = useState('')
   const [composedNotes, setComposedNotes] = useState([])
+  const [composedPianoroll, setComposedPianoroll] = useState('')
   const [isPlayingInit, setIsPlayingInit] = useState(false)
   const [isPlayingComposed, setIsPlayingComposed] = useState(false)
 
@@ -112,17 +114,22 @@ function App() {
     setInitNotes(initPiece.notes);
     setPolyph(initPiece.attr_cls.polyph);
     setRhythm(initPiece.attr_cls.rhythm);
+    setInitPianoroll(initPiece.pianoroll_base64);
+    console.log(initPiece.pianoroll_base64)
+    console.log(initPianoroll)
   }, [])
 
   const composeFunc = async () => {
     setIsComposing(true);
+    setHasComposed(false);
     let composedPiece = await composeRequest(
       refId, tempo, {
-        polyph: polyph,
-        rhythm: rhythm
+        polyph: polyph.map(ele => Math.max(Math.min(ele, 7), 0)),
+        rhythm: rhythm.map(ele => Math.max(Math.min(ele, 7), 0))
       }
     );
     setComposedNotes(composedPiece.notes);
+    setComposedPianoroll(composedPiece.pianoroll_base64);
     setIsComposing(false);
     setHasComposed(true);
   }
@@ -148,7 +155,12 @@ function App() {
               ["0:0:0", "G3", ""],
             ]}
           />         */}
-        <canvas width="600" height="200"></canvas>
+        {/* <canvas width="600" height="200"></canvas> */}
+        <img
+          className="pypianoroll"
+          src={"data:image/jpg;base64," + initPianoroll} 
+          style={{display: (initPianoroll === '')? 'none' : 'initial'}}
+        />
         <div id="play">
           <button onClick={playButton("i")}>
             {isPlayingInit? "Stop" : "Play Init Music"}
@@ -167,6 +179,11 @@ function App() {
             {hasComposed? "Recompose":"Compose"}
           </button>
         </div>
+        <img
+          className="pypianoroll"
+          src={"data:image/jpg;base64," + composedPianoroll} 
+          style={{display: (composedPianoroll === '')? 'none' : 'initial'}}
+        />
         <div id="playComposed">
           <button onClick={playButton("c")} disabled={!hasComposed}>
             {isPlayingComposed? "Stop" : "Play Composed Music"}

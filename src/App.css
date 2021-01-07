@@ -42,3 +42,12 @@
   display: flex;
   justify-content: space-evenly;
 }
+
+.pypianoroll {
+  width: 65%;
+  padding-left: 13%;
+}
+
+.attr-text {
+  flex: 0 0 15%;
+}

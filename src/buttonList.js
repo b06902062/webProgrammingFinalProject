@@ -5,7 +5,9 @@ function ButtonList(props){
 
   return(
     <div className="button-list">
-      {props.attrType}
+      <div className="attr-text">
+        {(props.attrType === 'rhythm')? 'Rhythm' : 'Harmony'}
+      </div>
       {props.attrData.map((elem, index) => (
         <div key={`${props.attrType[0]}_${index}`}>
           <input 

@@ -10,14 +10,14 @@ const statusApi = async () => {
 
 const getInitPiece = async () => {
   const {
-    data: {attr_cls, notes, tempo, ref_id}
+    data: {attr_cls, notes, tempo, ref_id, pianoroll_base64}
   } = await instance.get('/get_init_sample');
-  return {attr_cls, notes, tempo, ref_id}
+  return {attr_cls, notes, tempo, ref_id, pianoroll_base64}
 }
 
 const composeRequest = async (ref_id, oldTempo, {polyph, rhythm}) => {
   const {
-    data: {compose_time, notes, tempo}
+    data: {compose_time, notes, tempo, pianoroll_base64}
   } = await instance.post('/compose', {
     ref_id: ref_id,
     tempo: oldTempo,
@@ -26,7 +26,7 @@ const composeRequest = async (ref_id, oldTempo, {polyph, rhythm}) => {
       rhythm: rhythm
     }
   });
-  return {compose_time, notes, tempo}
+  return {compose_time, notes, tempo, pianoroll_base64}
 }
 
 // const startGame = async () => {
