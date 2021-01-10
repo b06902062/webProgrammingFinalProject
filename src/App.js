@@ -4,6 +4,8 @@ import './App.css'
 import { useEffect, useRef, useState } from 'react';
 import ButtonList from './buttonList.js'
 import { getInitPiece, composeRequest } from './axios'
+import { useCanvas, Canvas, redrawAll, myDraw } from './useCanvas.js';
+import { useGridCanvas, GridCanvas } from './useGridCanvas.js';
 
 let ac, pianoPlayer, timeOutButt;
 
@@ -63,6 +65,11 @@ function App() {
       }
     }
   }
+
+  useEffect( async () => {
+    ac = new window.AudioContext();
+    pianoPlayer = await Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' });
+  }, [])
 
   /***** Button  List  React *****/
   const [polyph, setPolyph] = useState([])
@@ -126,29 +133,44 @@ function App() {
     setIsComposing(false);
     setHasComposed(true);
   }
+
+  /***** Canvas render *****/
+  const [ canvasRef, canvasWidth, canvasHeight, nGrids, nPitch, gridSize] = useCanvas();
+  const [ gridCanvasRef ] = useGridCanvas();
+
+  const midi2Show = e => {
+    return {
+      start: Math.floor(e.start_tick/120),
+      key: e.key - 32, // [myRef]
+      gain: e.velocity/128,
+      duration: Math.floor(e.duration/120)
+    }
+  }
+
+  useEffect( async () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let notes = initNotes.map(midi2Show);
+    myDraw(nGrids, nPitch, gridSize, notes, "#3498DB", ctx);
+    //redrawAll(nGrids, [[34, 34, 34], [88, 88, 88], [55, 55, 55]], "#3498DB", ctx, nPitch, gridSize);
+  }, [initNotes, canvasHeight, canvasWidth])
+
   
   return (
     <div className="App">
       <header className="App-header">
-        {/* <PianoRoll
-            ref={pianorollRef}
-            width={640}
-            height={360}
-            zoom={4}
-            resolution={1}
-            noteData={[
-              ["0:0:0", "G5", ""],
-              ["0:0:0", "C4", "2n"],
-              ["2:4:0", "C4", 1],
-              ["0:0:0", "D4", "2n"],
-              ["0:0:0", "E4", "2n"],
-              ["0:2:0", "B4", "4n"],
-              ["1:2:0", "B4", "4n"],
-              ["0:3:0", "A#4", "4n"],
-              ["0:0:0", "G3", ""],
-            ]}
-          />         */}
-        <canvas width="600" height="200"></canvas>
+        <div id="canvas-container" style={{width:canvasWidth, height:canvasHeight}}>
+          <Canvas
+            forwardedRef={canvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+          />
+          <GridCanvas
+            forwardedRef={gridCanvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+          />
+        </div>
         <div id="play">
           <button onClick={playButton("i")}>
             {isPlayingInit? "Stop" : "Play Init Music"}
