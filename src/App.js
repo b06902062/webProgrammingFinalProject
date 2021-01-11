@@ -4,16 +4,19 @@ import './App.css'
 import { useEffect, useRef, useState } from 'react';
 import ButtonList from './buttonList.js'
 import { getInitPiece, composeRequest } from './axios'
-import { useCanvas, Canvas, redrawAll, myDraw } from './useCanvas.js';
+import { useCanvas, Canvas, myDraw } from './useCanvas.js';
 import { useGridCanvas, GridCanvas } from './useGridCanvas.js';
 
-let ac, pianoPlayer, timeOutButt;
+//import 'antd/dist/antd.css';
+import {
+  PlayCircleFilled,
+  PauseCircleFilled,
+  SlidersFilled,
+} from '@ant-design/icons';
+import { Layout } from 'antd';
+const { Header, Content, Footer, Sider } = Layout;
 
-/***** Backend Inf Display *****/
-const midiDispaly = e => {
-  return ["0:0:0", e.key, 1]
-  //"bars:quarters:sixteenths", key, 1 for whole note/"4n" for quarter note
-}
+let ac, pianoPlayer, timeOutButt;
 
 function App() {
   /***** Audio Playing *****/
@@ -151,49 +154,65 @@ function App() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     let notes = initNotes.map(midi2Show);
-    myDraw(nGrids, nPitch, gridSize, notes, "#3498DB", ctx);
-    //redrawAll(nGrids, [[34, 34, 34], [88, 88, 88], [55, 55, 55]], "#3498DB", ctx, nPitch, gridSize);
+    myDraw(nGrids, nPitch, gridSize, notes, ctx);
   }, [initNotes, canvasHeight, canvasWidth])
 
   
   return (
     <div className="App">
       <header className="App-header">
-        <div id="canvas-container" style={{width:canvasWidth, height:canvasHeight}}>
-          <Canvas
-            forwardedRef={canvasRef}
-            width={canvasWidth}
-            height={canvasHeight}
-          />
-          <GridCanvas
-            forwardedRef={gridCanvasRef}
-            width={canvasWidth}
-            height={canvasHeight}
-          />
-        </div>
-        <div id="play">
-          <button onClick={playButton("i")}>
-            {isPlayingInit? "Stop" : "Play Init Music"}
-          </button>
-        </div>
-        <ButtonList 
-          toggleFunc={toggleFunc} lockFunc={rLockFunc} 
-          locked={rLock} attrData={rhythm}
-          attrType="rhythm"/>
-        <ButtonList 
-          toggleFunc={toggleFunc} lockFunc={pLockFunc}
-          locked={pLock} attrData={polyph}
-          attrType="polyph"/>
-        <div id="request">
-          <button onClick={composeFunc} disabled={isComposing}>
-            {hasComposed? "Recompose":"Compose"}
-          </button>
-        </div>
-        <div id="playComposed">
+        <Layout>
+          <Content style={{ overflow: 'auto', width:canvasWidth, height:canvasHeight}}>
+              <div id="canvas-container" style={{width:canvasWidth, height:canvasHeight}}>
+                <Canvas
+                  forwardedRef={canvasRef}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                />
+                <GridCanvas
+                  forwardedRef={gridCanvasRef}
+                  width={canvasWidth}
+                  height={canvasHeight}
+                />
+              </div>
+          </Content>
+          <Layout>
+            <Sider style={{ overflow: 'auto'}}>
+              <div id="play">
+                <button className="my-button1" onClick={playButton("i")}>
+                  {isPlayingInit? 
+                    <PauseCircleFilled title="Pause"/> : 
+                    <PlayCircleFilled title="Play"/>}
+                </button>
+              </div>
+            </Sider>
+            <Content style={{ overflow: 'auto'}}>
+              <ButtonList 
+                toggleFunc={toggleFunc} lockFunc={rLockFunc} 
+                locked={rLock} attrData={rhythm}
+                attrType="rhythm"/>
+              <ButtonList 
+                toggleFunc={toggleFunc} lockFunc={pLockFunc}
+                locked={pLock} attrData={polyph}
+                attrType="polyph"/>
+            </Content>
+            <Sider style={{ overflow: 'auto'}}>
+              <div id="request">
+                <button className="my-button3" onClick={composeFunc} disabled={isComposing}>
+                  {hasComposed? 
+                    <SlidersFilled title="Reompose"/> : 
+                    <SlidersFilled title="Compose"/>}
+                </button>
+              </div>
+            </Sider>
+          </Layout>
+        </Layout>
+        
+        {/* <div id="playComposed">
           <button onClick={playButton("c")} disabled={!hasComposed}>
             {isPlayingComposed? "Stop" : "Play Composed Music"}
           </button>
-        </div>
+        </div> */}
       </header>
     </div>
   );

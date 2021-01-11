@@ -21,19 +21,30 @@ export function useWindowSize() {
   return size;
 }
 
-export function myDraw(n_grids, nPitch, gridSize, notes, color, ctx) {
+export function myDraw(n_grids, nPitch, gridSize, notes, ctx) {
+  const halfGridSize = Math.floor(gridSize/2);
+  const colors = [
+    'aqua', 'cornflowerblue', 'lightblue', 'lightcyan',
+    'darksalmon', 'coral', 'lightslamon', 'orange',
+    'orangered', 'tomato', 'sandybrown', 'peru'
+  ]
+  const colors1 = [
+    'mediumorchid', 'paleturqoise', 'salmon', 'mediumseagreen',
+    'navajowhite', 'hotpink', 'gold', 'turqoise',
+    'violet', 'palegreen', 'tomato', 'skyblue'
+  ]
   ctx.restore();
   ctx.beginPath();
-  ctx.clearRect(0, 0, gridSize * n_grids, gridSize * nPitch)
+  ctx.clearRect(0, 0, gridSize * n_grids, halfGridSize * nPitch)
 
   for(let note of notes){
     if(note.key < 0 || note.key >= n_pitch){
       continue;
     }
     ctx.restore();
-    ctx.fillStyle = color;
-    ctx.globalAlpha = note.gain;
-    ctx.fillRect(note.start * gridSize, note.key * gridSize, note.duration * gridSize, gridSize);
+    ctx.fillStyle = colors[note.key%12];
+    ctx.globalAlpha = note.gain*0.8 + 0.2;
+    ctx.fillRect(note.start * gridSize, note.key * halfGridSize, note.duration * gridSize, halfGridSize);
   }
 
   ctx.closePath();
@@ -42,10 +53,10 @@ export function myDraw(n_grids, nPitch, gridSize, notes, color, ctx) {
 export function useCanvas(){
     const canvasRef = useRef(null);
     let [window_width, window_height] = useWindowSize();
-    if (window_width < 1000)
-      window_width = 1000;
+    // if (window_width < 1000)
+    //   window_width = 1000;
     const canvasWidth = window_width - window_width % n_grids;
-    const canvasHeight = Math.floor(canvasWidth / n_grids) * n_pitch;
+    const canvasHeight = Math.floor(canvasWidth / n_grids) * n_pitch/2;
     const gridSize = Math.floor(canvasWidth / n_grids);
     console.log("width, height, gridSize of drawCanvas:", canvasWidth, canvasHeight, gridSize);
 
