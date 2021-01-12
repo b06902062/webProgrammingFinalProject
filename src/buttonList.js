@@ -26,13 +26,13 @@ function ButtonList(props){
             <div key={`bar_${elem}`}>
               <button 
                 className="my-button4"
-                disabled='true'>
+                disabled={true}>
                   <LeftCircleOutlined/>
               </button>
               <Text strong code style={{color:'palegreen'}}>{index}</Text>
               <button
                 className="my-button4"
-                disabled='true'>
+                disabled={true}>
                   <RightCircleOutlined/>
               </button>
             </div>

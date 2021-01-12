@@ -38,12 +38,12 @@ export function myDraw(n_grids, nPitch, gridSize, notes, ctx) {
   ctx.clearRect(0, 0, gridSize * n_grids, halfGridSize * nPitch)
 
   for(let note of notes){
-    if(note.key < 0 || note.key >= n_pitch){
+    if(note.key < 0 || note.key >= nPitch){
       continue;
     }
     ctx.restore();
     ctx.fillStyle = colors[note.key%12];
-    ctx.globalAlpha = 1//note.gain*0.8 + 0.2;
+    ctx.globalAlpha = note.gain;
     ctx.fillRect(note.start * gridSize, note.key * halfGridSize, note.duration * gridSize, halfGridSize);
   }
 
@@ -60,7 +60,7 @@ export function useCanvas(){
     const gridSize = Math.floor(canvasWidth / n_grids);
     console.log("width, height, gridSize of drawCanvas:", canvasWidth, canvasHeight, gridSize);
 
-    return [canvasRef, canvasWidth, canvasHeight, n_grids, n_pitch, gridSize];
+    return [canvasRef, canvasWidth, canvasHeight, gridSize, n_grids, n_pitch, n_bars, n_grids_per_bar];
 }
 
 export function Canvas(props) {

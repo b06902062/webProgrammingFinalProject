@@ -1,14 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { useWindowSize } from './useCanvas.js';
+import { useCanvas } from './useCanvas.js';
 
-/* ========================================================================== */
-const n_grids_per_bar = 16;
-const n_bars = 8;
-const n_grids = n_grids_per_bar * n_bars; // number of grids in horizontal direction
-const n_pitch = 64; // number of grids in vertical direction
-/* ========================================================================== */
-
-export function draw(ctx, canvasWidth, canvasHeight, gridSize){
+export function draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar){
   const halfGridSize = Math.floor(gridSize/2);
   ctx.save();
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -55,20 +48,14 @@ export function draw(ctx, canvasWidth, canvasHeight, gridSize){
 
 export function useGridCanvas(){
     const canvasRef = useRef(null);
-    let [window_width, window_height] = useWindowSize();
-    // if (window_width < 1000)
-    //   window_width = 1000;
-    const canvasWidth = window_width - window_width % n_grids;
-    const canvasHeight = Math.floor(canvasWidth / n_grids) * n_pitch;
-    const gridSize = Math.floor(canvasWidth / n_grids);
-
+    const [nullref, canvasWidth, canvasHeight, gridSize, n_grids, n_pitch, n_bars, n_grids_per_bar] = useCanvas();
     useEffect(()=>{
         const canvasObj = canvasRef.current;
         const ctx = canvasObj.getContext('2d');
         // clear the canvas area before rendering the coordinates held in state
         ctx.clearRect( 0,0, canvasWidth, canvasHeight );
 
-        draw(ctx, canvasWidth, canvasHeight, gridSize);
+        draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar);
     }, [canvasWidth, canvasHeight, gridSize]);
 
     return [ canvasRef ];

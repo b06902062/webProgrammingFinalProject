@@ -1,11 +1,11 @@
 import Soundfont from 'soundfont-player'
-import PianoRoll from 'react-piano-roll'
 import './App.css'
 import { useEffect, useRef, useState } from 'react';
 import ButtonList from './buttonList.js'
 import { getInitPiece, composeRequest } from './axios'
 import { useCanvas, Canvas, myDraw } from './useCanvas.js';
 import { useGridCanvas, GridCanvas } from './useGridCanvas.js';
+import { useProgressCanvas, ProgressCanvas, progressDraw, stopProgress } from './useProgressCanvas.js';
 
 //import 'antd/dist/antd.css';
 import {
@@ -37,33 +37,56 @@ function App() {
     }
   }
 
+  const midi2Progress = e => {
+    return {
+      time: tick2Sec(e.start_tick),
+      start: Math.floor(e.start_tick/120),
+      key: e.key - 20, // [myRef]
+      gain: e.velocity/128,
+      duration: Math.floor(e.duration/120)
+    }
+  }
+
   const myPlayer = (player, notes, setFunc) => {
     return new Promise((resolve) => {
       const noteSched = notes.map(midi2Play)
+      const noteProgress = notes.map(midi2Progress)
       const timeoutSec = 1000 * (noteSched[ noteSched.length - 1 ].time + noteSched[ noteSched.length - 1 ].duration);
-      player.schedule(ac.currentTime, noteSched)
-      timeOutButt = setTimeout(() => {
+      const canvas = progressCanvasRef.current;
+      const ctx = canvas.getContext('2d');
+      const finish = ()=>{
+        console.log('finish')
+        clearTimeout(timeOutButt)
         setFunc(false)
-        resolve()
-      }, timeoutSec)
+        resolve();
+      }
+      player.schedule(ac.currentTime, noteSched)
+      progressDraw(nGrids, nPitch, gridSize, noteProgress, ctx, timeOutButt, finish);
+      
+      // timeOutButt = setTimeout(() => {
+      //  setFunc(false)
+      //  resolve()
+      // }, timeoutSec)
     })
   }
 
   const playButton = (tag) => {
     return async() => {
-      let isPlaying = (tag === "i")? isPlayingInit : isPlayingComposed
-      let notes = (tag === "i")? initNotes : composedNotes
-      let setFunc = (tag === "i")?
+      const isPlaying = (tag === "i")? isPlayingInit : isPlayingComposed
+      const notes = (tag === "i")? initNotes : composedNotes
+      const setFunc = (tag === "i")?
         ele => {setIsPlayingInit(ele)} :
         ele => {setIsPlayingComposed(ele)}
-      if(!isPlaying){
-        setFunc(true)
-        await myPlayer(pianoPlayer, notes, setFunc)
+
+      if(isPlaying){
+        pianoPlayer.stop()
+        // setFunc(false)
+        // clearTimeout(timeOutButt)
+        stopProgress()
       }
       else{
-        setFunc(false)
-        pianoPlayer.stop()
-        clearTimeout(timeOutButt)
+        setFunc(true)
+        await myPlayer(pianoPlayer, notes, setFunc)
       }
     }
   }
@@ -137,8 +160,9 @@ function App() {
   }
 
   /***** Canvas render *****/
-  const [ canvasRef, canvasWidth, canvasHeight, nGrids, nPitch, gridSize] = useCanvas();
+  const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch] = useCanvas();
   const [ gridCanvasRef ] = useGridCanvas();
+  const [ progressCanvasRef, progressDraw, stopProgress] = useProgressCanvas();
 
   const midi2Show = e => {
     return {
@@ -172,6 +196,11 @@ function App() {
               width={canvasWidth}
               height={canvasHeight}
               />
+            <ProgressCanvas
+              forwardedRef={progressCanvasRef}
+              width={canvasWidth}
+              height={canvasHeight}
+            />
             </div>
           </Space>
         <Space split={<Divider type="vertical"/>}>
