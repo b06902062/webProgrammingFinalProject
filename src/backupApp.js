@@ -183,7 +183,6 @@ function App() {
               </button>
             </div>
           <Space direction='vertical'>
-            <ButtonList attrType='title'/>
             <ButtonList 
               toggleFunc={toggleFunc} lockFunc={rLockFunc} 
               locked={rLock} attrData={rhythm}

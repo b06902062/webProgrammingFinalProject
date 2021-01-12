@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 const n_grids_per_bar = 16;
 const n_bars = 8;
 const n_grids = n_grids_per_bar * n_bars; // number of grids in horizontal direction
-const n_pitch = 64; // number of grids in vertical direction
+const n_pitch = 88; // number of grids in vertical direction
 /* ========================================================================== */
 
 /* Change window size when resizing window */
@@ -43,7 +43,7 @@ export function myDraw(n_grids, nPitch, gridSize, notes, ctx) {
     }
     ctx.restore();
     ctx.fillStyle = colors[note.key%12];
-    ctx.globalAlpha = note.gain*0.8 + 0.2;
+    ctx.globalAlpha = 1//note.gain*0.8 + 0.2;
     ctx.fillRect(note.start * gridSize, note.key * halfGridSize, note.duration * gridSize, halfGridSize);
   }
 
@@ -53,8 +53,8 @@ export function myDraw(n_grids, nPitch, gridSize, notes, ctx) {
 export function useCanvas(){
     const canvasRef = useRef(null);
     let [window_width, window_height] = useWindowSize();
-    // if (window_width < 1000)
-    //   window_width = 1000;
+    if (window_width > 1000)
+      window_width -= 100;
     const canvasWidth = window_width - window_width % n_grids;
     const canvasHeight = Math.floor(canvasWidth / n_grids) * n_pitch/2;
     const gridSize = Math.floor(canvasWidth / n_grids);
