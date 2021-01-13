@@ -1,6 +1,7 @@
 import 'antd/dist/antd.css';
-import { Switch, Typography, Space, Divider } from 'antd';
+import { Button, Switch, Typography, Space, Divider } from 'antd';
 import {
+  RedoOutlined,
   UnlockOutlined,
   LockOutlined,
   RightCircleOutlined,
@@ -13,15 +14,13 @@ function ButtonList(props){
     const arr = ['#1', '#2', '#3', '#4', '#5', '#6', '#7', '#8'];
     return(
       <div>
-        <Space direction="horizontal">
-          <Switch
-            size="small"
-            checkedChildren={<UnlockOutlined />}
-            unCheckedChildren={<LockOutlined />}
-            />
-          <Text keyboard strong style={{color:'palegreen'}}>Bar&nbsp;#&nbsp;</Text>
-        </Space>
         <Space split={<Divider type="vertical"/>}>
+          <Space direction="horizontal" style={{ width: 120 }}>
+            <Button 
+              type="primary" shape="round" size='small'
+              icon={<RedoOutlined />} onClick={props.toggleFunc} />
+            <Text keyboard strong style={{color:'palegreen'}}>Bar</Text>
+            </Space>
           {arr.map((elem, index) => (
             <div key={`bar_${elem}`}>
               <button 
@@ -44,18 +43,18 @@ function ButtonList(props){
 
   return(
     <div className="button-list">
-      <Space direction="horizontal">
-        <Switch
-          size="small"
-          checkedChildren={<UnlockOutlined />}
-          unCheckedChildren={<LockOutlined />}
-          defaultChecked={props.locked} 
-          onClick={props.lockFunc}/>
-        {props.attrType === 'rhythm'?
-          <Text keyboard strong style={{color:'mediumslateblue'}}>Rhythm</Text> :
-          <Text keyboard strong style={{color:'MediumSeaGreen'}}>Polyph</Text> }
-      </Space>
       <Space split={<Divider type="vertical"/>}>
+        <Space direction="horizontal" style={{ width: 120 }}>
+          <Switch
+            size="small"
+            checkedChildren={<UnlockOutlined />}
+            unCheckedChildren={<LockOutlined />}
+            defaultChecked={props.locked} 
+            onClick={props.lockFunc}/>
+          {props.attrType === 'rhythm'?
+            <Text keyboard strong style={{color:'mediumslateblue'}}>Rhythm</Text> :
+            <Text keyboard strong style={{color:'MediumSeaGreen'}}>Polyph</Text> }
+        </Space>
         {props.attrData.map((elem, index) => (
           <div key={`${props.attrType[0]}_${index}`}>
             <button 

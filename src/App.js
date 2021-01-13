@@ -15,8 +15,7 @@ import {
 } from '@ant-design/icons';
 import { Space, Divider } from 'antd';
 
-let ac, pianoPlayer, timeOutButt;
-
+let ac, pianoPlayer, timeOutButt, timeOutButt2=[], timeOutButt3=[];
 function App() {
   /***** Audio Playing *****/
   const [initNotes, setInitNotes] = useState([])
@@ -39,11 +38,15 @@ function App() {
 
   const midi2Progress = e => {
     return {
+      //for clock
       time: tick2Sec(e.start_tick),
-      start: Math.floor(e.start_tick/120),
+      duration: tick2Sec(e.duration),
+      
       key: e.key - 20, // [myRef]
       gain: e.velocity/128,
-      duration: Math.floor(e.duration/120)
+      //for draw
+      start: Math.floor(e.start_tick/120),
+      end: Math.floor(e.duration/120)
     }
   }
 
@@ -54,19 +57,15 @@ function App() {
       const timeoutSec = 1000 * (noteSched[ noteSched.length - 1 ].time + noteSched[ noteSched.length - 1 ].duration);
       const canvas = progressCanvasRef.current;
       const ctx = canvas.getContext('2d');
-      const finish = ()=>{
-        console.log('finish')
-        clearTimeout(timeOutButt)
-        setFunc(false)
-        resolve();
-      }
+
       player.schedule(ac.currentTime, noteSched)
-      progressDraw(nGrids, nPitch, gridSize, noteProgress, ctx, timeOutButt, finish);
+      progressDraw(noteProgress, timeOutButt2, timeOutButt3);
       
-      // timeOutButt = setTimeout(() => {
-      //  setFunc(false)
-      //  resolve()
-      // }, timeoutSec)
+      timeOutButt = setTimeout(() => {
+       setFunc(false)
+       progressClear()
+       resolve()
+      }, timeoutSec)
     })
   }
 
@@ -80,9 +79,12 @@ function App() {
 
       if(isPlaying){
         pianoPlayer.stop()
-        // setFunc(false)
-        // clearTimeout(timeOutButt)
-        stopProgress()
+        setFunc(false)
+
+        clearTimeout(timeOutButt)
+        timeOutButt2.forEach(e=>{clearTimeout(e)})
+        timeOutButt3.forEach(e=>{clearTimeout(e)})
+        progressClear()
       }
       else{
         setFunc(true)
@@ -99,8 +101,14 @@ function App() {
   /***** Button  List  React *****/
   const [polyph, setPolyph] = useState([])
   const [rhythm, setRhythm] = useState([])
+  const [defaultPR, setDefaultPR] = useState([])
   const [pLock, setPLock] = useState(true)
   const [rLock, setRLock] = useState(true)
+
+  const defaultToggleFunc = () => {
+    setPolyph(defaultPR[0])
+    setRhythm(defaultPR[1])
+  }
 
   const toggleFunc = (index, op, typ) => {
     return (() => {
@@ -144,6 +152,7 @@ function App() {
     setInitNotes(initPiece.notes);
     setPolyph(initPiece.attr_cls.polyph);
     setRhythm(initPiece.attr_cls.rhythm);
+    setDefaultPR([initPiece.attr_cls.polyph, initPiece.attr_cls.rhythm])
   }, [])
 
   const composeFunc = async () => {
@@ -162,7 +171,7 @@ function App() {
   /***** Canvas render *****/
   const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch] = useCanvas();
   const [ gridCanvasRef ] = useGridCanvas();
-  const [ progressCanvasRef, progressDraw, stopProgress] = useProgressCanvas();
+  const [ progressCanvasRef, progressDraw, progressClear] = useProgressCanvas();
 
   const midi2Show = e => {
     return {
@@ -212,7 +221,9 @@ function App() {
               </button>
             </div>
           <Space direction='vertical'>
-            <ButtonList attrType='title'/>
+            <ButtonList 
+              toggleFunc={defaultToggleFunc}
+              attrType='title'/>
             <ButtonList 
               toggleFunc={toggleFunc} lockFunc={rLockFunc} 
               locked={rLock} attrData={rhythm}

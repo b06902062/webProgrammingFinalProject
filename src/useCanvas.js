@@ -44,7 +44,7 @@ export function myDraw(n_grids, nPitch, gridSize, notes, ctx) {
     ctx.restore();
     ctx.fillStyle = colors[note.key%12];
     ctx.globalAlpha = note.gain;
-    ctx.fillRect(note.start * gridSize, note.key * halfGridSize, note.duration * gridSize, halfGridSize);
+    ctx.fillRect(note.start * gridSize, note.key * halfGridSize, (note.duration-0.5) * gridSize, halfGridSize);
   }
 
   ctx.closePath();
