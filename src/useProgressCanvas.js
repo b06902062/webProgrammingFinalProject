@@ -32,12 +32,12 @@ export function useProgressCanvas(){
       ctx.restore();
       ctx.fillStyle = colors[elem.key%12];
       ctx.globalAlpha = 1;
-      ctx.fillRect(elem.start * gridSize, elem.key * halfGridSize, (elem.end-0.5) * gridSize, halfGridSize);
+      ctx.fillRect(elem.start * gridSize, canvasHeight - elem.key * halfGridSize, (elem.end-0.5) * gridSize, halfGridSize);
     }
 
     const clearOneNote = (elem) =>{
       ctx.restore();
-      ctx.clearRect(elem.start * gridSize, elem.key * halfGridSize, elem.end * gridSize, halfGridSize);
+      ctx.clearRect(elem.start * gridSize, canvasHeight - elem.key * halfGridSize, (elem.end-0.5) * gridSize, halfGridSize);
     }
 
     notes.forEach((elem, index)=>{

@@ -15,7 +15,7 @@ function ButtonList(props){
     return(
       <div>
         <Space split={<Divider type="vertical"/>}>
-          <Space direction="horizontal" style={{ width: 120 }}>
+          <Space direction="horizontal" style={{ width: 150 }}>
             <Button 
               type="primary" shape="round" size='small'
               icon={<RedoOutlined />} onClick={props.toggleFunc} />
@@ -44,7 +44,7 @@ function ButtonList(props){
   return(
     <div className="button-list">
       <Space split={<Divider type="vertical"/>}>
-        <Space direction="horizontal" style={{ width: 120 }}>
+        <Space direction="horizontal" style={{ width: 150 }}>
           <Switch
             size="small"
             checkedChildren={<UnlockOutlined />}

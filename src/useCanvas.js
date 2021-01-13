@@ -21,7 +21,7 @@ export function useWindowSize() {
   return size;
 }
 
-export function myDraw(n_grids, nPitch, gridSize, notes, ctx) {
+export function myDraw(canvasHeight, n_grids, nPitch, gridSize, notes, ctx) {
   const halfGridSize = Math.floor(gridSize/2);
   const colors = [
     'aqua', 'cornflowerblue', 'lightblue', 'lightcyan',
@@ -44,7 +44,7 @@ export function myDraw(n_grids, nPitch, gridSize, notes, ctx) {
     ctx.restore();
     ctx.fillStyle = colors[note.key%12];
     ctx.globalAlpha = note.gain;
-    ctx.fillRect(note.start * gridSize, note.key * halfGridSize, (note.duration-0.5) * gridSize, halfGridSize);
+    ctx.fillRect(note.start * gridSize, canvasHeight - note.key * halfGridSize, (note.duration-0.5) * gridSize, halfGridSize);
   }
 
   ctx.closePath();

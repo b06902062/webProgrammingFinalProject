@@ -186,7 +186,7 @@ function App() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     let notes = initNotes.map(midi2Show);
-    myDraw(nGrids, nPitch, gridSize, notes, ctx);
+    myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
   }, [initNotes, canvasHeight, canvasWidth])
 
   
