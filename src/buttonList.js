@@ -28,7 +28,7 @@ function ButtonList(props){
               <button 
                 className="my-button2"
                 onClick={props.toggleFunc(index, -1, props.attrType)}
-                disabled={(elem <= 0) || (props.locked && index !== 0)}>
+                disabled={(!props.nowAPage) || (elem <= 0) || (props.locked && index !== 0)}>
                   <LeftCircleOutlined title="Down"/>
               </button>
               <Text strong code //style={{fontSize:'16px'}}
@@ -41,7 +41,7 @@ function ButtonList(props){
               <button
                 className="my-button2"
                 onClick={props.toggleFunc(index, +1, props.attrType)}
-                disabled={(elem >= 7) || (props.locked && index !== 0)}>
+                disabled={(!props.nowAPage) || (elem >= 7) || (props.locked && index !== 0)}>
                   <RightCircleOutlined title="Up"/>
               </button>
             </div>

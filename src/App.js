@@ -173,8 +173,8 @@ function App() {
     setIsComposing(true);
     let composedPiece = await composeRequest(
       refId, tempo, {
-        polyph: polyph,
-        rhythm: rhythm
+        polyph: polyph.map(e=>Math.max(Math.min(e, 7), 0)),
+        rhythm: rhythm.map(e=>Math.max(Math.min(e, 7), 0))
       }
     );
     setComposedNotes(composedPiece.notes);
@@ -257,14 +257,10 @@ function App() {
                     </button>
                   </div>
                 <div id="back2default">
-                  <button className="my-button1" disabled={true}>
-                    <RedoOutlined/>
-                    </button>
+                  <button className="my-button1" disabled={true}><RedoOutlined/></button>
                   </div>
                 <div id="request">
-                  <button className="my-button1 color1" disabled={true}>
-                    <SlidersFilled/> 
-                  </button>
+                  <button className="my-button1 color1" disabled={true}><SlidersFilled/></button>
                 </div>
                 <div id="prevpage">
                   <button className="my-button1" style={{color:'lightgreen'}} onClick={()=>nextPage(true)}>
@@ -296,11 +292,13 @@ function App() {
               toggleFunc={toggleFunc} lockFunc={rLockFunc} 
               locked={rLock} attrData={rhythm}
               windowWidth={window_width} canvasWidth={canvasWidth}
+              nowAPage={originPage}
               attrType="rhythm"/>
             <ButtonList 
               toggleFunc={toggleFunc} lockFunc={pLockFunc}
               locked={pLock} attrData={polyph}
               windowWidth={window_width} canvasWidth={canvasWidth}
+              nowAPage={originPage}
               attrType="polyph"/>
             </Space>      
         </div>
