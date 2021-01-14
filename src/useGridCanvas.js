@@ -22,9 +22,9 @@ export function draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar){
 
   ctx.beginPath();
   for (let i = 0; i < canvasWidth; i += gridSize) {
-    ctx.lineWidth = (1.0+((i/gridSize%n_grids_per_bar)===0)*5)*0.1;
+    ctx.lineWidth = 1.2;
     if ((i/gridSize%n_grids_per_bar)===0)
-      ctx.strokeStyle = 'gray';
+      ctx.strokeStyle = 'white';
     else
       continue; //ctx.strokeStyle = '#717171';
     ctx.beginPath();
@@ -32,9 +32,16 @@ export function draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar){
     ctx.lineTo(i + 0.5, canvasHeight);
     ctx.stroke();
   }
+  ctx.strokeStyle = 'white'
+  ctx.lineWidth = 1.2;    
+  ctx.beginPath();
+  ctx.moveTo(canvasWidth - 0.6, 0);
+  ctx.lineTo(canvasWidth - 0.6, canvasHeight);
+  ctx.stroke();
+
   for (let i = 0; i < canvasHeight; i += halfGridSize) {
     ctx.lineWidth = (1.0+((i/halfGridSize%12)===4)*5)*0.1; // [myRef]
-    if ((i/halfGridSize%12)===4)
+    if ((i/halfGridSize%12)===3)
       ctx.strokeStyle = 'gray';
     else
       continue; //ctx.strokeStyle = '#717171';'#F5927E'

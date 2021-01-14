@@ -89,14 +89,27 @@
   margin:0;
   padding:0;
   outline:none;
+  transition: color 0.5s;
 }
 
-.my-button1:hover{
+.my-button1:hover:enabled{
   cursor: pointer;
 }
 
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+.spinner {
+  animation: spin 2s infinite;
+}
+
+.bg-color1 {
+  background-color: aquamarine;
+}
+
 .color1{
-  color:chocolate;
+  color:orange;
 }
 
 .color2{

@@ -26,7 +26,7 @@ const composeRequest = async (ref_id, oldTempo, {polyph, rhythm}) => {
       rhythm: rhythm
     }
   });
-  return {compose_time, notes, tempo}
+  return {compose_time, notes, tempo, rhythm, polyph}
 }
 
 // const startGame = async () => {

@@ -15,9 +15,20 @@ import {
   RedoOutlined,
   ArrowRightOutlined,
   ArrowLeftOutlined,
+  LoadingOutlined
 } from '@ant-design/icons';
-import { Space, Divider, Typography, Button } from 'antd';
+import { Space, Divider, Typography, Spin } from 'antd';
+// import { Button } from '@material-ui/core';
+// import { ActionButton } from './customButtonStyle.js'
+import { 
+  PlayArrowRounded,
+  StopRounded,
+  ArrowBackRounded,
+  MusicNoteRounded
+} from '@material-ui/icons'
+
 const { Title, Text } = Typography;
+
 
 let ac, pianoPlayer, timeOutButt, timeOutButt2=[], timeOutButt3=[];
 function App() {
@@ -109,8 +120,10 @@ function App() {
   }, [])
 
   /***** Button  List  React *****/
-  const [polyph, setPolyph] = useState([])
-  const [rhythm, setRhythm] = useState([])
+  const [polyph, setPolyph] = useState([0, 0, 0, 0, 0, 0, 0, 0])
+  const [rhythm, setRhythm] = useState([0, 0, 0, 0, 0, 0, 0, 0])
+  const [composedPolyph, setComposedPolyph] = useState([0, 0, 0, 0, 0, 0, 0, 0])
+  const [composedRhythm, setComposedRhythm] = useState([0, 0, 0, 0, 0, 0, 0, 0])
   const [defaultPR, setDefaultPR] = useState([])
   const [pLock, setPLock] = useState(true)
   const [rLock, setRLock] = useState(true)
@@ -178,6 +191,8 @@ function App() {
       }
     );
     setComposedNotes(composedPiece.notes);
+    setComposedRhythm(composedPiece.rhythm);
+    setComposedPolyph(composedPiece.polyph)
     setIsComposing(false);
     setHasComposed(true);
   }
@@ -210,18 +225,20 @@ function App() {
       myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
     }
   }, [initNotes, canvasHeight, canvasWidth, originPage])
+
+  const passedRhythm = (originPage)? rhythm : composedRhythm;
+  const passedPolyph = (originPage)? polyph : composedPolyph;
   
   return (
     <div className="App">
-      <header className="App-header">
-        <div>
-          <div style={{width:window_width, height:(canvasHeight+0.1*window_height)}}>
+      <body className="App-header">
+          <div style={{position: "relative", width:window_width, height:(canvasHeight+0.1*window_height)}}>
             {originPage?
               <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
                 <Title strong level={3} style={{color:'CornflowerBlue'}}>Original Song</Title>
                 <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
                 <div id="play">
-                  <button className="my-button1" style={{color:'aquamarine'}} onClick={playButton("i")}>
+                  <button className="my-button1" style={{color: isPlayingInit? 'lightpink':'aquamarine'}} onClick={playButton("i")}>
                     {isPlayingInit? 
                     <PauseCircleFilled title="Pause"/> : 
                     <PlayCircleFilled title="Play"/>}
@@ -229,33 +246,56 @@ function App() {
                   </div>
                 <div id="back2default">
                   <button className="my-button1" style={{color:'azure'}} onClick={defaultToggleFunc}>
-                    <RedoOutlined title="Default Setting"/>
+                    <RedoOutlined title="Set Tuners to Default"/>
                     </button>
                   </div>
                 <div id="request">
-                  <button className="my-button1 color1"
-                    onClick={composeFunc} disabled={isComposing}>
-                    <SlidersFilled title={hasComposed? "Recompose":"Compose"}/> 
-                  </button>
+                    <button 
+                      className={isComposing ? "my-button1 color1 spinner" : "my-button1 color1"}
+                      onClick={composeFunc} 
+                      disabled={isComposing}
+                    >
+                      {/* <SlidersFilled title={hasComposed? "Recompose":"Compose"}/>  */}
+                      <MusicNoteRounded style={{fontSize: '36px'}} titleAccess={isComposing? "Composing..." : hasComposed? "Recompose" : "Compose"}/>
+                    </button>
                 </div>
-                <div id="nextpage">
-                  <button className="my-button1 color2"
-                    onClick={()=>nextPage(false)} disabled={!hasComposed}>
-                    <ArrowRightOutlined title="See Composed Song"/>
-                  </button>
-                </div>
+                { hasComposed && !isComposing &&
+                  <div id="nextpage">
+                    <button className="my-button1 color2"
+                      onClick={()=>nextPage(false)}>
+                      <ArrowRightOutlined title="See My Song"/>
+                    </button>
+                  </div>
+                }
               </div>
               :
               <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
-                <Title strong level={3} style={{color:'CornflowerBlue'}}>Composed Song</Title>
+                <Title strong level={3} style={{color:'CornflowerBlue'}}>Your Song</Title>
                 <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
                 <div id="play">
-                  <button className="my-button1" style={{color:'aquamarine'}} onClick={playButton("c")}>
-                    {isPlayingInit? 
+                  <button className="my-button1" style={{color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
+                    {(isPlayingComposed)? 
                     <PauseCircleFilled title="Pause"/> : 
                     <PlayCircleFilled title="Play"/>}
-                    </button>
-                  </div>
+                  </button>
+                  {/* <ActionButton
+                    onClick={playButton("c")}
+                    style={ isPlayingComposed ? 
+                      {backgroundColor: 'magenta', color: 'white'} :
+                      {backgroundColor: 'aquamarine'}
+                    }
+                    variant="contained"
+                    size="large"
+                    startIcon={ isPlayingComposed ? 
+                      <StopRounded style={{fontSize: '30px'}}/> :
+                      <PlayArrowRounded style={{fontSize: '30px'}}/>
+                    }
+                  >
+                    {isPlayingComposed?
+                      'Stop' : 'Play'
+                    }
+                  </ActionButton> */}
+                </div>
                 <div id="back2default">
                   <button className="my-button1" disabled={true}><RedoOutlined/></button>
                   </div>
@@ -266,6 +306,17 @@ function App() {
                   <button className="my-button1" style={{color:'lightgreen'}} onClick={()=>nextPage(true)}>
                     <ArrowLeftOutlined title="See Original Song"/>
                   </button>
+                  {/* <ActionButton
+                    onClick={()=>nextPage(true)}
+                    style={ 
+                      {backgroundColor: 'lightgreen'}
+                    }
+                    variant="contained"
+                    size="large"
+                    startIcon={<ArrowBackRounded style={{fontSize: '30px'}}/>}
+                  >
+                    Original
+                  </ActionButton> */}
                 </div>
               </div>
             
@@ -290,18 +341,17 @@ function App() {
           <Space direction='vertical' style={{width:window_width}}>
             <ButtonList 
               toggleFunc={toggleFunc} lockFunc={rLockFunc} 
-              locked={rLock} attrData={rhythm}
+              locked={rLock} attrData={passedRhythm}
               windowWidth={window_width} canvasWidth={canvasWidth}
               nowAPage={originPage}
               attrType="rhythm"/>
             <ButtonList 
               toggleFunc={toggleFunc} lockFunc={pLockFunc}
-              locked={pLock} attrData={polyph}
+              locked={pLock} attrData={passedPolyph}
               windowWidth={window_width} canvasWidth={canvasWidth}
               nowAPage={originPage}
               attrType="polyph"/>
-            </Space>      
-        </div>
+            </Space>
           
           {/* <div>
             <div id="playComposed">
@@ -311,7 +361,7 @@ function App() {
             </div>
           </div> */}
         
-      </header>
+      </body>
     </div>
   );
 }
