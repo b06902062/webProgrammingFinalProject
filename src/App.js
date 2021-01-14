@@ -184,7 +184,7 @@ function App() {
 
   /***** Canvas render *****/
   const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch, n_bars, n_grids_per_bar, window_width, window_height] = useCanvas();
-  const [ gridCanvasRef ] = useGridCanvas(originPage);
+  const [ gridCanvasRef ] = useGridCanvas();
   const [ progressCanvasRef, progressDraw, progressClear] = useProgressCanvas();
 
   const midi2Show = e => {
@@ -203,17 +203,22 @@ function App() {
       let notes = initNotes.map(midi2Show);
       myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
     }
+    else{
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      let notes = composedNotes.map(midi2Show);
+      myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
+    }
   }, [initNotes, canvasHeight, canvasWidth, originPage])
   
   return (
     <div className="App">
       <header className="App-header">
-        {
-          originPage?
-          <div>
-            <div style={{width:window_width, height:(canvasHeight+0.1*window_height)}}>
+        <div>
+          <div style={{width:window_width, height:(canvasHeight+0.1*window_height)}}>
+            {originPage?
               <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
-                <Title strong level={4} style={{color:'CornflowerBlue'}}>Original Song</Title>
+                <Title strong level={3} style={{color:'CornflowerBlue'}}>Original Song</Title>
                 <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
                 <div id="play">
                   <button className="my-button1" style={{color:'aquamarine'}} onClick={playButton("i")}>
@@ -236,53 +241,78 @@ function App() {
                 <div id="nextpage">
                   <button className="my-button1 color2"
                     onClick={()=>nextPage(false)} disabled={!hasComposed}>
-                    <ArrowRightOutlined title="Next"/>
+                    <ArrowRightOutlined title="See Composed Song"/>
                   </button>
                 </div>
               </div>
-              <Canvas
-                forwardedRef={canvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
-                />
-              <GridCanvas
-                forwardedRef={gridCanvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
-                />
-              <ProgressCanvas
-                forwardedRef={progressCanvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
-              />
+              :
+              <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
+                <Title strong level={3} style={{color:'CornflowerBlue'}}>Composed Song</Title>
+                <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
+                <div id="play">
+                  <button className="my-button1" style={{color:'aquamarine'}} onClick={playButton("c")}>
+                    {isPlayingInit? 
+                    <PauseCircleFilled title="Pause"/> : 
+                    <PlayCircleFilled title="Play"/>}
+                    </button>
+                  </div>
+                <div id="back2default">
+                  <button className="my-button1" disabled={true}>
+                    <RedoOutlined/>
+                    </button>
+                  </div>
+                <div id="request">
+                  <button className="my-button1 color1" disabled={true}>
+                    <SlidersFilled/> 
+                  </button>
+                </div>
+                <div id="prevpage">
+                  <button className="my-button1" style={{color:'lightgreen'}} onClick={()=>nextPage(true)}>
+                    <ArrowLeftOutlined title="See Original Song"/>
+                  </button>
+                </div>
               </div>
-            <Space direction='vertical' style={{width:window_width}}>
-              <ButtonList 
-                toggleFunc={toggleFunc} lockFunc={rLockFunc} 
-                locked={rLock} attrData={rhythm}
-                windowWidth={window_width} canvasWidth={canvasWidth}
-                attrType="rhythm"/>
-              <ButtonList 
-                toggleFunc={toggleFunc} lockFunc={pLockFunc}
-                locked={pLock} attrData={polyph}
-                windowWidth={window_width} canvasWidth={canvasWidth}
-                attrType="polyph"/>
-              </Space>      
-          </div>
-            :
-          <div>
+            
+            
+            }
+            <Canvas
+              forwardedRef={canvasRef}
+              width={canvasWidth}
+              height={canvasHeight}
+              />
+            <GridCanvas
+              forwardedRef={gridCanvasRef}
+              width={canvasWidth}
+              height={canvasHeight}
+              />
+            <ProgressCanvas
+              forwardedRef={progressCanvasRef}
+              width={canvasWidth}
+              height={canvasHeight}
+            />
+            </div>
+          <Space direction='vertical' style={{width:window_width}}>
+            <ButtonList 
+              toggleFunc={toggleFunc} lockFunc={rLockFunc} 
+              locked={rLock} attrData={rhythm}
+              windowWidth={window_width} canvasWidth={canvasWidth}
+              attrType="rhythm"/>
+            <ButtonList 
+              toggleFunc={toggleFunc} lockFunc={pLockFunc}
+              locked={pLock} attrData={polyph}
+              windowWidth={window_width} canvasWidth={canvasWidth}
+              attrType="polyph"/>
+            </Space>      
+        </div>
+          
+          {/* <div>
             <div id="playComposed">
               <button onClick={playButton("c")} disabled={!hasComposed}>
                 {isPlayingComposed? "Stop" : "Play Composed Music"}
               </button>
             </div>
-            <div id="prevpage">
-              <button className="my-button1" style={{color:'lightgreen'}} onClick={()=>nextPage(true)}>
-                <ArrowLeftOutlined title="Back"/>
-              </button>
-            </div>
-          </div>
-        }
+          </div> */}
+        
       </header>
     </div>
   );
