@@ -46,17 +46,19 @@ export function draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar){
   ctx.restore();
 };
 
-export function useGridCanvas(){
+export function useGridCanvas(originPage){
     const canvasRef = useRef(null);
     const [nullref, canvasWidth, canvasHeight, gridSize, n_grids, n_pitch, n_bars, n_grids_per_bar] = useCanvas();
     useEffect(()=>{
+      if(originPage){
         const canvasObj = canvasRef.current;
         const ctx = canvasObj.getContext('2d');
         // clear the canvas area before rendering the coordinates held in state
         ctx.clearRect( 0,0, canvasWidth, canvasHeight );
 
         draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar);
-    }, [canvasWidth, canvasHeight, gridSize]);
+      }
+    }, [canvasWidth, canvasHeight, gridSize, originPage]);
 
     return [ canvasRef ];
 }

@@ -1,7 +1,6 @@
 import Soundfont from 'soundfont-player'
 import './App.css'
 import { useEffect, useRef, useState } from 'react';
-import ButtonList from './buttonList.js'
 import { getInitPiece, composeRequest } from './axios'
 import { useCanvas, Canvas, myDraw } from './useCanvas.js';
 import { useGridCanvas, GridCanvas } from './useGridCanvas.js';
@@ -13,22 +12,12 @@ import {
   PauseCircleFilled,
   SlidersFilled,
   RedoOutlined,
-  ArrowRightOutlined,
-  ArrowLeftOutlined,
 } from '@ant-design/icons';
 import { Space, Divider, Typography, Button } from 'antd';
 const { Title, Text } = Typography;
 
 let ac, pianoPlayer, timeOutButt, timeOutButt2=[], timeOutButt3=[];
 function App() {
-  /***** Result Page *****/
-  const [originPage, setOriginPage] = useState(true)
-
-  const nextPage = (flag)=>{
-    console.log(flag)
-    setOriginPage(flag)
-  }
-
   /***** Audio Playing *****/
   const [initNotes, setInitNotes] = useState([])
   const [composedNotes, setComposedNotes] = useState([])
@@ -67,6 +56,8 @@ function App() {
       const noteSched = notes.map(midi2Play)
       const noteProgress = notes.map(midi2Progress)
       const timeoutSec = 1000 * (noteSched[ noteSched.length - 1 ].time + noteSched[ noteSched.length - 1 ].duration);
+      const canvas = progressCanvasRef.current;
+      const ctx = canvas.getContext('2d');
 
       player.schedule(ac.currentTime, noteSched)
       progressDraw(noteProgress, timeOutButt2, timeOutButt3);
@@ -183,8 +174,8 @@ function App() {
   }
 
   /***** Canvas render *****/
-  const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch, n_bars, n_grids_per_bar, window_width, window_height] = useCanvas();
-  const [ gridCanvasRef ] = useGridCanvas(originPage);
+  const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch, n_bars, n_grids_per_bar, window_width] = useCanvas();
+  const [ gridCanvasRef ] = useGridCanvas();
   const [ progressCanvasRef, progressDraw, progressClear] = useProgressCanvas();
 
   const midi2Show = e => {
@@ -197,92 +188,76 @@ function App() {
   }
 
   useEffect( async () => {
-    if(originPage){
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      let notes = initNotes.map(midi2Show);
-      myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
-    }
-  }, [initNotes, canvasHeight, canvasWidth, originPage])
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let notes = initNotes.map(midi2Show);
+    myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
+  }, [initNotes, canvasHeight, canvasWidth])
+
   
   return (
     <div className="App">
       <header className="App-header">
-        {
-          originPage?
-          <div>
-            <div style={{width:window_width, height:(canvasHeight+0.1*window_height)}}>
-              <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
-                <Title strong level={4} style={{color:'CornflowerBlue'}}>Original Song</Title>
-                <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
-                <div id="play">
-                  <button className="my-button1" style={{color:'aquamarine'}} onClick={playButton("i")}>
-                    {isPlayingInit? 
-                    <PauseCircleFilled title="Pause"/> : 
-                    <PlayCircleFilled title="Play"/>}
-                    </button>
-                  </div>
-                <div id="back2default">
-                  <button className="my-button1" style={{color:'azure'}} onClick={defaultToggleFunc}>
-                    <RedoOutlined title="Default Setting"/>
-                    </button>
-                  </div>
-                <div id="request">
-                  <button className="my-button1 color1"
-                    onClick={composeFunc} disabled={isComposing}>
-                    <SlidersFilled title={hasComposed? "Recompose":"Compose"}/> 
-                  </button>
-                </div>
-                <div id="nextpage">
-                  <button className="my-button1 color2"
-                    onClick={()=>nextPage(false)} disabled={!hasComposed}>
-                    <ArrowRightOutlined title="Next"/>
-                  </button>
-                </div>
+        <div style={{width:window_width, height:canvasHeight}}>
+          <div id="info-container" style={{width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
+            <Title strong level={4} style={{color:'mediumslateblue'}}>Original Song</Title>
+            <Title strong level={5} style={{color:'mediumslateblue'}}>ID:&nbsp;{refId}</Title>
+            <div id="play">
+              <button className="my-button1" style={{color:'aquamarine'}} onClick={playButton("i")}>
+                {isPlayingInit? 
+                <PauseCircleFilled title="Pause"/> : 
+                <PlayCircleFilled title="Play"/>}
+                </button>
               </div>
-              <Canvas
-                forwardedRef={canvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
-                />
-              <GridCanvas
-                forwardedRef={gridCanvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
-                />
-              <ProgressCanvas
-                forwardedRef={progressCanvasRef}
-                width={canvasWidth}
-                height={canvasHeight}
-              />
+            <div id="back2default">
+              <button className="my-button1" style={{color:'white'}} onClick={defaultToggleFunc}>
+                <RedoOutlined title="Default Setting"/>
+                </button>
               </div>
-            <Space direction='vertical' style={{width:window_width}}>
-              <ButtonList 
-                toggleFunc={toggleFunc} lockFunc={rLockFunc} 
-                locked={rLock} attrData={rhythm}
-                windowWidth={window_width} canvasWidth={canvasWidth}
-                attrType="rhythm"/>
-              <ButtonList 
-                toggleFunc={toggleFunc} lockFunc={pLockFunc}
-                locked={pLock} attrData={polyph}
-                windowWidth={window_width} canvasWidth={canvasWidth}
-                attrType="polyph"/>
-              </Space>      
-          </div>
-            :
-          <div>
-            <div id="playComposed">
-              <button onClick={playButton("c")} disabled={!hasComposed}>
-                {isPlayingComposed? "Stop" : "Play Composed Music"}
-              </button>
-            </div>
-            <div id="prevpage">
-              <button className="my-button1" style={{color:'lightgreen'}} onClick={()=>nextPage(true)}>
-                <ArrowLeftOutlined title="Back"/>
+            <div id="request">
+              <button className="my-button3" onClick={composeFunc} disabled={isComposing}>
+                {hasComposed? 
+                  <SlidersFilled title="Recompose"/> : 
+                  <SlidersFilled title="Compose"/>}
               </button>
             </div>
           </div>
-        }
+          <Canvas
+            forwardedRef={canvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+            />
+          <GridCanvas
+            forwardedRef={gridCanvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+            />
+          <ProgressCanvas
+            forwardedRef={progressCanvasRef}
+            width={canvasWidth}
+            height={canvasHeight}
+          />
+          </div>
+
+        <Space direction='vertical' style={{width:window_width}}>
+          <ButtonList 
+            toggleFunc={toggleFunc} lockFunc={rLockFunc} 
+            locked={rLock} attrData={rhythm}
+            windowWidth={window_width} canvasWidth={canvasWidth}
+            attrType="rhythm"/>
+          <ButtonList 
+            toggleFunc={toggleFunc} lockFunc={pLockFunc}
+            locked={pLock} attrData={polyph}
+            windowWidth={window_width} canvasWidth={canvasWidth}
+            attrType="polyph"/>
+          </Space>
+          
+        
+        {/* <div id="playComposed">
+          <button onClick={playButton("c")} disabled={!hasComposed}>
+            {isPlayingComposed? "Stop" : "Play Composed Music"}
+          </button>
+        </div> */}
       </header>
     </div>
   );
