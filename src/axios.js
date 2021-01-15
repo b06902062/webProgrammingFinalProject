@@ -17,7 +17,7 @@ const getInitPiece = async () => {
 
 const composeRequest = async (ref_id, oldTempo, {polyph, rhythm}) => {
   const {
-    data: {compose_time, notes, tempo}
+    data: {compose_time, notes, tempo, composed_id}
   } = await instance.post('/compose', {
     ref_id: ref_id,
     tempo: oldTempo,
@@ -26,31 +26,53 @@ const composeRequest = async (ref_id, oldTempo, {polyph, rhythm}) => {
       rhythm: rhythm
     }
   });
-  return {compose_time, notes, tempo, rhythm, polyph}
+  return {compose_time, notes, tempo, rhythm, polyph, composed_id}
 }
 
-// const startGame = async () => {
-//   const {
-//     data: { msg }
-//   } = await instance.post('/start')
+const rateSongRequest = async (composedID, delta_like, delta_dislike) => {
+  const {
+    data: {composed_id, likes, dislikes}
+  } = await instance.post('/rate', {
+    composed_id: composedID,
+    delta_like: delta_like,
+    delta_dislike: delta_dislike
+  });
 
-//   return msg
-// }
+  return {composed_id, likes, dislikes}
+}
 
-// const guess = async (number) => {
-//   const {
-//     data: { msg }
-//   } = await instance.get('/guess', { params: { number } })
+const getRecommendationsRequest = async (ref_id, composed_id) => {
+  const {
+    data: {n_results, recommended_songs}
+  } = await instance.post('/retrieve', {
+    ref_id: ref_id,
+    composed_id: composed_id
+  });
 
-//   return msg
-// }
+  return {n_results, composed_id}
+}
 
-// const restart = async () => {
-//   const {
-//     data: { msg }
-//   } = await instance.post('/restart')
+const downloadSongRequest = async (composed_id, ranking) => {
+  const { data } = await instance.post('/download', {
+    composed_id: composed_id,
+    ranking: ranking
+  }, {
+    responseType: 'blob'
+  })
 
-//   return msg
-// }
+  if (ranking === -1) {
+    ranking = 'my_song'
+  }
 
-export { statusApi, getInitPiece, composeRequest }
+  const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+  link.setAttribute('download', String(ranking) + '.mp3');
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  return data
+}
+
+export { statusApi, getInitPiece, composeRequest, rateSongRequest, getRecommendationsRequest, downloadSongRequest }

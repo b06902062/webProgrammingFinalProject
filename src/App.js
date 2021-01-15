@@ -2,7 +2,11 @@ import Soundfont from 'soundfont-player'
 import './App.css'
 import { useEffect, useRef, useState } from 'react';
 import ButtonList from './buttonList.js'
-import { getInitPiece, composeRequest } from './axios'
+import { 
+  getInitPiece, 
+  composeRequest,
+  downloadSongRequest
+} from './axios'
 import { useCanvas, Canvas, myDraw } from './useCanvas.js';
 import { useGridCanvas, GridCanvas } from './useGridCanvas.js';
 import { useProgressCanvas, ProgressCanvas, progressDraw, stopProgress } from './useProgressCanvas.js';
@@ -15,7 +19,8 @@ import {
   RedoOutlined,
   ArrowRightOutlined,
   ArrowLeftOutlined,
-  LoadingOutlined
+  LoadingOutlined,
+  DownloadOutlined
 } from '@ant-design/icons';
 import { Space, Divider, Typography, Spin } from 'antd';
 // import { Button } from '@material-ui/core';
@@ -163,9 +168,11 @@ function App() {
   /***** Webserver requests *****/
   const [hasRequested, setHasRequested] = useState(false)
   const [refId, setRefId] = useState(-1)
+  const [composedId, setComposedId] = useState('');
   const [tempo, setTempo] = useState(120)
   const [isComposing, setIsComposing] = useState(false)
   const [hasComposed, setHasComposed] = useState(false)
+  const [isDownloading, setIsDownloading] = useState(false)
 
   useEffect( async () => {
     if(!hasRequested){
@@ -192,9 +199,17 @@ function App() {
     );
     setComposedNotes(composedPiece.notes);
     setComposedRhythm(composedPiece.rhythm);
-    setComposedPolyph(composedPiece.polyph)
+    setComposedPolyph(composedPiece.polyph);
+    setComposedId(composedPiece.composed_id);
     setIsComposing(false);
     setHasComposed(true);
+  }
+
+  const downloadFunc = async (composed_id, ranking) => {
+    // console.log('[ranking]', ranking)
+    setIsDownloading(true)
+    const songData = await downloadSongRequest(composed_id, ranking);
+    setIsDownloading(false)
   }
 
   /***** Canvas render *****/
@@ -300,10 +315,19 @@ function App() {
                   <button className="my-button1" disabled={true}><RedoOutlined/></button>
                   </div>
                 <div id="request">
-                  <button className="my-button1 color1" disabled={true}><SlidersFilled/></button>
+                  <button 
+                    className={(isDownloading) ? "my-button1 button-move color1" : "my-button1 color1"} 
+                    onClick={() => downloadFunc(composedId, -1)}
+                  >
+                    <DownloadOutlined title="Download My Song" />
+                  </button>
                 </div>
                 <div id="prevpage">
-                  <button className="my-button1" style={{color:'lightgreen'}} onClick={()=>nextPage(true)}>
+                  <button 
+                    className="my-button1 color2"
+                    onClick={()=>nextPage(true)}
+                    disabled={isDownloading || isPlayingComposed}
+                  >
                     <ArrowLeftOutlined title="See Original Song"/>
                   </button>
                   {/* <ActionButton
