@@ -151,3 +151,24 @@
 .my-button2:disabled{
   color:darkgrey;
 }
+
+.image-container{
+  background-color: rgba(30, 30, 30, 1);
+  border: 5px #282c34 solid;
+}
+
+.unit-container{
+  background-color: rgba(54, 54, 54, 1);
+  border: 30px rgba(54, 54, 54, 1) solid;
+}
+
+.rec-page-top{
+  overflow:hidden;
+  height:30%
+}
+
+.rec-page-down{
+  overflow:auto;
+  overflow-x: hidden;
+  height:70%
+}

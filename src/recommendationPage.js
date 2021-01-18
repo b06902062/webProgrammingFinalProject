@@ -6,8 +6,6 @@ import {
   rateSongRequest
 } from './axios'
 import { useCanvas, Canvas, myDraw } from './useCanvas.js';
-import { useGridCanvas, GridCanvas } from './useGridCanvas.js';
-import { useProgressCanvas, ProgressCanvas, progressDraw, stopProgress } from './useProgressCanvas.js';
 
 import 'antd/dist/antd.css';
 import {
@@ -25,11 +23,10 @@ const { Title, Text } = Typography;
 
 let ac, pianoPlayer, timeOutButt;
 function RecPage(props) {
+  /***** Audio playing *****/
   const [isPlaying, setIsPlaying] = useState(new Array(props.n_results+1).fill(false))
   const [isAnyonePlaying, setIsAnyonePlaying] = useState(false)
-  const [isDownloading, setIsDownloading] = useState(new Array(props.n_results+1).fill(false))
-  const [myImg, setMyImg] = useState([])
-
+  
   const midi2Play = (tempo)=>{
     const tick2Sec = (tic, tpb = 480) => {
       return parseFloat(60*tic/tempo/tpb);
@@ -82,6 +79,13 @@ function RecPage(props) {
     pianoPlayer = await Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' });
   }, [])
 
+  /***** Webserver request *****/
+  const [isDownloading, setIsDownloading] = useState(new Array(props.n_results+1).fill(false))
+  const [isLike, setIsLike] = useState(new Array(props.n_results).fill(false))
+  const [isDisLike, setIsDisLike] = useState(new Array(props.n_results).fill(false))
+  const [likeCount, setLikeCount] = useState(new Array(props.n_results).fill(0))
+  const [disLikeCount, setDisLikeCount] = useState(new Array(props.n_results).fill(0))
+
   const downloadFunc = async (index) => {
     setIsDownloading(isDownloading.map((ele, ind)=>(
       (ind === index)? true: ele
@@ -92,7 +96,28 @@ function RecPage(props) {
     )))
   }
 
+  const pressLikeButt = async(ind, flag)=>{
+    let deltaLike = 0, deltaDisLike = 0;
+    if(flag){//press like button
+      deltaLike = isLike[ind]? -1 : 1;
+      deltaDisLike = isDisLike[ind]? -1 : 0;
+      setIsLike(isLike.map((e, i)=>(i===ind? !e:e)))
+      setIsDisLike(isDisLike.map((e, i)=>(i===ind? false:e)))
+    }
+    else{
+      deltaLike = isLike[ind]? -1 : 0;
+      deltaDisLike = isDisLike[ind]? -1 : 1;
+      setIsDisLike(isDisLike.map((e, i)=>(i===ind? !e:e)))
+      setIsLike(isLike.map((e, i)=>(i===ind? false:e)))
+    }
+
+    let result = await rateSongRequest(props.recommendations.composed_id, deltaLike, deltaDisLike)
+    setLikeCount(likeCount.map((e, i)=>(i===ind? result.likes:e)))
+    setDisLikeCount(disLikeCount.map((e, i)=>(i===ind? result.dislikes:e)))
+  }
+
   /***** Canvas render *****/
+  const [myImg, setMyImg] = useState([])
   const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch ] = useCanvas(true);
 
   const midi2Show = e => {
@@ -122,14 +147,14 @@ function RecPage(props) {
   })
 
   return (
-    <>
+    <Space direction='vertical' size={'large'}>
       <Canvas
         forwardedRef={canvasRef}
         width={canvasWidth}
         height={canvasHeight}
         unDisplay
         />  
-      <Space direction='horizontal' split={<Divider type='vertical'/>}>
+      <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
         <div id='play'>
           <button className='my-button1' onClick={()=>play(0)}
             style={{color: isAnyonePlaying&&!isPlaying[0]? 'grey' : isPlaying[0]? 'lightpink':'aquamarine'}}
@@ -139,10 +164,11 @@ function RecPage(props) {
               <PlayCircleFilled title="Play"/>}
           </button>
         </div>
-        <div id='song-image'>
+        <div className='image-container' id='song-image'>
           <img src={`${myImg[0]}`}/>
         </div>
-        <div id='like-status' className="my-button1" style={{color: props.likeStatus?'greenyellow':'red'}}>
+        <div id='like-status' className="my-button1" 
+          style={{ width: '80px', color: props.likeStatus?'greenyellow':'red'}}>
           {props.likeStatus? <LikeFilled title='You liked it'/> : <DislikeFilled title='You disliked it'/>}
         </div>
         <div id="download">
@@ -150,14 +176,14 @@ function RecPage(props) {
             className={(isDownloading[0]) ? "my-button1 button-move color1" : "my-button1 color1"} 
             onClick={() => downloadFunc(0)}
           >
-            <DownloadOutlined title="Download My Song" />
+            <DownloadOutlined title="Download my song" />
           </button>
         </div>
       </Space>
       
-      <div id='recommendation'>
+      <Space className='rec-page-down' direction='vertical'>
         {props.recommendations.map((ele, ind)=>(
-          <Space direction='horizontal' split={<Divider type='vertical'/>}>
+          <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
             <div id='play'>
               <button className='my-button1' onClick={()=>play(ind+1)}
                 style={{color: isAnyonePlaying&&!isPlaying[ind+1]? 'grey' : isPlaying[ind+1]? 'lightpink':'aquamarine'}}
@@ -167,24 +193,36 @@ function RecPage(props) {
                   <PlayCircleFilled title="Play"/>}
               </button>
             </div>
-            <div id='song-image'>
+            <div className='image-container' id='song-image'>
               <img src={`${myImg[ind+1]}`}/>
             </div>
-            <div id='like-status' className="my-button1" style={{color: props.likeStatus?'greenyellow':'red'}}>
-              {props.likeStatus? <LikeFilled title='You liked it'/> : <DislikeFilled title='You disliked it'/>}
-            </div>
+            <Space style={{ width: '80px'}}>
+              <button 
+                className="my-button1 color3" 
+                style={{color: isLike[ind]? 'azure' : 'grey'}}
+                onClick={() => pressLikeButt(ind, true)}>
+                {isLike[ind]? <LikeFilled title='Cancel Like'/> : <LikeOutlined title='Like'/>}
+              </button>
+              <button 
+                className="my-button1 color3"
+                style={{color: isDisLike[ind]? 'azure' : 'grey'}}
+                onClick={() => pressLikeButt(ind, false)}>
+                {isDisLike[ind]? <DislikeFilled title='Cancel Dislike'/> : <DislikeOutlined title='Dislike'/>}
+              </button>
+            </Space>
             <div id="download">
               <button 
                 className={(isDownloading[ind+1]) ? "my-button1 button-move color1" : "my-button1 color1"} 
-                onClick={() => downloadFunc(ind+1)}>
-                <DownloadOutlined title="Download My Song" />
+                onClick={() => downloadFunc(ind+1)}
+                disabled={!(isLike[ind]||isDisLike[ind])}>
+                <DownloadOutlined title={!(isLike[ind]||isDisLike[ind])?'Rate to download':"Download this song"} />
               </button>
             </div>
           </Space>
         ))}
-      </div>
+      </Space>
       <button className='my-button1' onClick={props.goback}>go back</button>
-    </>
+    </Space>
   );
 }
 
