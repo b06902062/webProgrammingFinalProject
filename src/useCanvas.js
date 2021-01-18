@@ -50,16 +50,17 @@ export function myDraw(canvasHeight, n_grids, nPitch, gridSize, notes, ctx) {
   ctx.closePath();
 }
 
-export function useCanvas(){
+export function useCanvas(flag = false){
     const canvasRef = useRef(null);
     let [window_width, window_height] = useWindowSize();
-    // if (window_width > 1000)
-    //   window_width -= 100;
+    if(flag){
+      window_width = 800;
+      window_height = 450;
+    }
     const canvasWidth = 0.8*window_width - 0.8*window_width % n_grids;
     const canvasHeight = Math.floor(canvasWidth / n_grids) * n_pitch/2;
     const gridSize = Math.floor(canvasWidth / n_grids);
     //console.log("width, height, gridSize of drawCanvas:", canvasWidth, canvasHeight, gridSize);
-
     return [canvasRef, canvasWidth, canvasHeight, gridSize, n_grids, n_pitch, n_bars, n_grids_per_bar, window_width, window_height];
 }
 
@@ -70,6 +71,11 @@ export function Canvas(props) {
       ref={props.forwardedRef}
       width={props.width}
       height={props.height}
+      style={('unDisplay' in props)?
+        {display: 'none'}
+        :
+        {}
+      }
     />
   )
 }

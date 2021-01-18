@@ -152,6 +152,8 @@ function App() {
   const [rLock, setRLock] = useState(true)
   const [isLike, setIsLike] = useState(false)
   const [isDisLike, setIsDisLike] = useState(false)
+  const [likeCount, setLikeCount] = useState(0)
+  const [disLikeCount, setDisLikeCount] = useState(0)
 
   const pressLikeButt = async(flag)=>{
     let deltaLike = 0, deltaDisLike = 0;
@@ -169,7 +171,9 @@ function App() {
     }
     //console.log(composedId, deltaLike, deltaDisLike)
     let result = await rateSongRequest(composedId, deltaLike, deltaDisLike)
-    console.log(result);
+    //console.log(result);
+    setLikeCount(result.likes)
+    setDisLikeCount(result.dislikes)
   }
 
   const defaultToggleFunc = () => {
@@ -289,9 +293,14 @@ function App() {
         {recommendationPage?
           <RecPage 
             id={recommandProps.composed_id}
-            songs={recommandProps.recommended_songs}
+            recommendations={recommandProps.recommended_songs}
+            composedSong={{
+              tempo:tempo, notes:composedNotes, composed_id:recommandProps.composed_id,
+              dislikes:disLikeCount, likes:likeCount, downloads:0, ranking:-1
+            }}
             n_results={recommandProps.n_results}
             goback={()=>setRecommendationPage(false)}
+            likeStatus={isLike}
           />
           :
           <>
@@ -361,8 +370,9 @@ function App() {
                   <div id="recommand">
                     <button 
                       className="my-button1 color1"
-                      onClick={() => requestRecommendations()}>
-                      <StarFilled title="Recommendation"/>
+                      onClick={() => requestRecommendations()}
+                      disabled={!(isLike||isDisLike)}>
+                      <StarFilled title={(isLike||isDisLike)?"Recommendations":"Like or dislike to get recommendations :)"}/>
                     </button>
                   </div>
                   {/* <div id="download">
