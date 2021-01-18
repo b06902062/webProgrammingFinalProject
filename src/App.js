@@ -2,10 +2,13 @@ import Soundfont from 'soundfont-player'
 import './App.css'
 import { useEffect, useRef, useState } from 'react';
 import ButtonList from './buttonList.js'
+import RecPage from './recommendationPage.js'
 import { 
   getInitPiece, 
   composeRequest,
-  downloadSongRequest
+  downloadSongRequest,
+  rateSongRequest,
+  getRecommendationsRequest
 } from './axios'
 import { useCanvas, Canvas, myDraw } from './useCanvas.js';
 import { useGridCanvas, GridCanvas } from './useGridCanvas.js';
@@ -20,7 +23,13 @@ import {
   ArrowRightOutlined,
   ArrowLeftOutlined,
   LoadingOutlined,
-  DownloadOutlined
+  DownloadOutlined,
+  LikeOutlined,
+  LikeFilled,
+  DislikeOutlined,
+  DislikeFilled,
+  CommentOutlined,
+  StarFilled,
 } from '@ant-design/icons';
 import { Space, Divider, Typography, Spin } from 'antd';
 // import { Button } from '@material-ui/core';
@@ -39,10 +48,19 @@ let ac, pianoPlayer, timeOutButt, timeOutButt2=[], timeOutButt3=[];
 function App() {
   /***** Result Page *****/
   const [originPage, setOriginPage] = useState(true)
+  const [recommendationPage, setRecommendationPage] = useState(false)
+  const [recommandProps, setRecommendationProps] = useState()
 
   const nextPage = (flag)=>{
     console.log(flag)
     setOriginPage(flag)
+  }
+
+  const requestRecommendations = async()=>{
+    let result = await getRecommendationsRequest(refId, composedId);
+    console.log(result.n_results, result.composed_id, result.recommended_songs)
+    setRecommendationProps(result)
+    setRecommendationPage(true)
   }
 
   /***** Audio Playing *****/
@@ -132,6 +150,27 @@ function App() {
   const [defaultPR, setDefaultPR] = useState([])
   const [pLock, setPLock] = useState(true)
   const [rLock, setRLock] = useState(true)
+  const [isLike, setIsLike] = useState(false)
+  const [isDisLike, setIsDisLike] = useState(false)
+
+  const pressLikeButt = async(flag)=>{
+    let deltaLike = 0, deltaDisLike = 0;
+    if(flag){//press like button
+      deltaLike = isLike? -1 : 1;
+      deltaDisLike = isDisLike? -1 : 0;
+      setIsLike(!isLike)
+      setIsDisLike(false)
+    }
+    else{
+      deltaLike = isLike? -1 : 0;
+      deltaDisLike = isDisLike? -1 : 1;
+      setIsDisLike(!isDisLike)
+      setIsLike(false)
+    }
+    //console.log(composedId, deltaLike, deltaDisLike)
+    let result = await rateSongRequest(composedId, deltaLike, deltaDisLike)
+    console.log(result);
+  }
 
   const defaultToggleFunc = () => {
     setPolyph(defaultPR[0])
@@ -214,7 +253,7 @@ function App() {
 
   /***** Canvas render *****/
   const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch, n_bars, n_grids_per_bar, window_width, window_height] = useCanvas();
-  const [ gridCanvasRef ] = useGridCanvas();
+  const [ gridCanvasRef ] = useGridCanvas(recommendationPage);
   const [ progressCanvasRef, progressDraw, progressClear] = useProgressCanvas();
 
   const midi2Show = e => {
@@ -233,7 +272,7 @@ function App() {
       let notes = initNotes.map(midi2Show);
       myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
     }
-    else{
+    else if(!recommendationPage){
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       let notes = composedNotes.map(midi2Show);
@@ -247,105 +286,104 @@ function App() {
   return (
     <div className="App">
       <body className="App-header">
-          <div style={{position: "relative", width:window_width, height:(canvasHeight+0.1*window_height)}}>
-            {originPage?
-              <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
-                <Title strong level={3} style={{color:'CornflowerBlue'}}>Original Song</Title>
-                <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
-                <div id="play">
-                  <button className="my-button1" style={{color: isPlayingInit? 'lightpink':'aquamarine'}} onClick={playButton("i")}>
-                    {isPlayingInit? 
-                    <PauseCircleFilled title="Pause"/> : 
-                    <PlayCircleFilled title="Play"/>}
+        {recommendationPage?
+          <RecPage 
+            id={recommandProps.composed_id}
+            songs={recommandProps.recommended_songs}
+            n_results={recommandProps.n_results}
+            goback={()=>setRecommendationPage(false)}
+          />
+          :
+          <>
+            <div style={{position: "relative", width:window_width, height:(canvasHeight+0.1*window_height)}}>
+              {originPage?
+                <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
+                  <Title strong level={3} style={{color:'CornflowerBlue'}}>Original Song</Title>
+                  <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
+                  <div id="play">
+                    <button className="my-button1" style={{color: isPlayingInit? 'lightpink':'aquamarine'}} 
+                      onClick={playButton("i")} disabled={refId===-1}>
+                      {isPlayingInit? 
+                      <PauseCircleFilled title="Pause"/> : 
+                      <PlayCircleFilled title="Play"/>}
+                      </button>
+                    </div>
+                  <div id="back2default">
+                    <button className="my-button1 color3" onClick={defaultToggleFunc}>
+                      <RedoOutlined title="Set Tuners to Default"/>
+                      </button>
+                    </div>
+                  <div id="request">
+                      <button 
+                        className={isComposing ? "my-button1 color1 spinner" : "my-button1 color1"}
+                        onClick={composeFunc} 
+                        disabled={isComposing}
+                      >
+                        {/* <SlidersFilled title={hasComposed? "Recompose":"Compose"}/>  */}
+                        <MusicNoteRounded style={{fontSize: '36px'}} titleAccess={isComposing? "Composing..." : hasComposed? "Recompose" : "Compose"}/>
+                      </button>
+                  </div>
+                  { hasComposed && !isComposing &&
+                    <div id="nextpage">
+                      <button className="my-button1 color2"
+                        onClick={()=>nextPage(false)}
+                        disabled={isPlayingInit}>
+                        <ArrowRightOutlined title="See My Song"/>
+                      </button>
+                    </div>
+                  }
+                </div>
+                :
+                <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
+                  <Title strong level={3} style={{color:'CornflowerBlue'}}>Your Song</Title>
+                  <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
+                  <div id="play">
+                    <button className="my-button1" style={{color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
+                      {(isPlayingComposed)? 
+                      <PauseCircleFilled title="Pause"/> : 
+                      <PlayCircleFilled title="Play"/>}
                     </button>
                   </div>
-                <div id="back2default">
-                  <button className="my-button1" style={{color:'azure'}} onClick={defaultToggleFunc}>
-                    <RedoOutlined title="Set Tuners to Default"/>
-                    </button>
-                  </div>
-                <div id="request">
+                  <Space>
                     <button 
-                      className={isComposing ? "my-button1 color1 spinner" : "my-button1 color1"}
-                      onClick={composeFunc} 
-                      disabled={isComposing}
+                      className="my-button1 color3" 
+                      style={{color: isLike? 'azure' : 'grey'}}
+                      onClick={() => pressLikeButt(true)}>
+                      {isLike? <LikeFilled title='Cancel Like'/> : <LikeOutlined title='Like'/>}
+                    </button>
+                    <button 
+                      className="my-button1 color3"
+                      style={{color: isDisLike? 'azure' : 'grey'}}
+                      onClick={() => pressLikeButt(false)}>
+                      {isDisLike? <DislikeFilled title='Cancel Dislike'/> : <DislikeOutlined title='Dislike'/>}
+                    </button>
+                  </Space>
+                  <div id="recommand">
+                    <button 
+                      className="my-button1 color1"
+                      onClick={() => requestRecommendations()}>
+                      <StarFilled title="Recommendation"/>
+                    </button>
+                  </div>
+                  {/* <div id="download">
+                    <button 
+                      className={(isDownloading) ? "my-button1 button-move color1" : "my-button1 color1"} 
+                      onClick={() => downloadFunc(composedId, -1)}
                     >
-                      {/* <SlidersFilled title={hasComposed? "Recompose":"Compose"}/>  */}
-                      <MusicNoteRounded style={{fontSize: '36px'}} titleAccess={isComposing? "Composing..." : hasComposed? "Recompose" : "Compose"}/>
+                      <DownloadOutlined title="Download My Song" />
                     </button>
-                </div>
-                { hasComposed && !isComposing &&
-                  <div id="nextpage">
-                    <button className="my-button1 color2"
-                      onClick={()=>nextPage(false)}>
-                      <ArrowRightOutlined title="See My Song"/>
+                  </div> */}
+                  <div id="prevpage">
+                    <button 
+                      className="my-button1 color2"
+                      onClick={()=>nextPage(true)}
+                      disabled={isDownloading || isPlayingComposed}
+                    >
+                      <ArrowLeftOutlined title="See Original Song"/>
                     </button>
                   </div>
-                }
-              </div>
-              :
-              <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
-                <Title strong level={3} style={{color:'CornflowerBlue'}}>Your Song</Title>
-                <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
-                <div id="play">
-                  <button className="my-button1" style={{color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
-                    {(isPlayingComposed)? 
-                    <PauseCircleFilled title="Pause"/> : 
-                    <PlayCircleFilled title="Play"/>}
-                  </button>
-                  {/* <ActionButton
-                    onClick={playButton("c")}
-                    style={ isPlayingComposed ? 
-                      {backgroundColor: 'magenta', color: 'white'} :
-                      {backgroundColor: 'aquamarine'}
-                    }
-                    variant="contained"
-                    size="large"
-                    startIcon={ isPlayingComposed ? 
-                      <StopRounded style={{fontSize: '30px'}}/> :
-                      <PlayArrowRounded style={{fontSize: '30px'}}/>
-                    }
-                  >
-                    {isPlayingComposed?
-                      'Stop' : 'Play'
-                    }
-                  </ActionButton> */}
-                </div>
-                <div id="back2default">
-                  <button className="my-button1" disabled={true}><RedoOutlined/></button>
-                  </div>
-                <div id="request">
-                  <button 
-                    className={(isDownloading) ? "my-button1 button-move color1" : "my-button1 color1"} 
-                    onClick={() => downloadFunc(composedId, -1)}
-                  >
-                    <DownloadOutlined title="Download My Song" />
-                  </button>
-                </div>
-                <div id="prevpage">
-                  <button 
-                    className="my-button1 color2"
-                    onClick={()=>nextPage(true)}
-                    disabled={isDownloading || isPlayingComposed}
-                  >
-                    <ArrowLeftOutlined title="See Original Song"/>
-                  </button>
-                  {/* <ActionButton
-                    onClick={()=>nextPage(true)}
-                    style={ 
-                      {backgroundColor: 'lightgreen'}
-                    }
-                    variant="contained"
-                    size="large"
-                    startIcon={<ArrowBackRounded style={{fontSize: '30px'}}/>}
-                  >
-                    Original
-                  </ActionButton> */}
-                </div>
-              </div>
-            
-            
-            }
+                </div>           
+              }
             <Canvas
               forwardedRef={canvasRef}
               width={canvasWidth}
@@ -362,29 +400,22 @@ function App() {
               height={canvasHeight}
             />
             </div>
-          <Space direction='vertical' style={{width:window_width}}>
-            <ButtonList 
-              toggleFunc={toggleFunc} lockFunc={rLockFunc} 
-              locked={rLock} attrData={passedRhythm}
-              windowWidth={window_width} canvasWidth={canvasWidth}
-              nowAPage={originPage}
-              attrType="rhythm"/>
-            <ButtonList 
-              toggleFunc={toggleFunc} lockFunc={pLockFunc}
-              locked={pLock} attrData={passedPolyph}
-              windowWidth={window_width} canvasWidth={canvasWidth}
-              nowAPage={originPage}
-              attrType="polyph"/>
+            <Space direction='vertical' style={{width:window_width}}>
+              <ButtonList 
+                toggleFunc={toggleFunc} lockFunc={rLockFunc} 
+                locked={rLock} attrData={passedRhythm}
+                windowWidth={window_width} canvasWidth={canvasWidth}
+                nowAPage={originPage}
+                attrType="rhythm"/>
+              <ButtonList 
+                toggleFunc={toggleFunc} lockFunc={pLockFunc}
+                locked={pLock} attrData={passedPolyph}
+                windowWidth={window_width} canvasWidth={canvasWidth}
+                nowAPage={originPage}
+                attrType="polyph"/>
             </Space>
-          
-          {/* <div>
-            <div id="playComposed">
-              <button onClick={playButton("c")} disabled={!hasComposed}>
-                {isPlayingComposed? "Stop" : "Play Composed Music"}
-              </button>
-            </div>
-          </div> */}
-        
+          </>
+        }
       </body>
     </div>
   );

@@ -130,6 +130,10 @@
   color:lightgreen;
 }
 
+.color3{
+  color: azure;
+}
+
 .my-button1:disabled{
   color:darkgrey;
 }

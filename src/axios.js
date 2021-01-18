@@ -49,7 +49,7 @@ const getRecommendationsRequest = async (ref_id, composed_id) => {
     composed_id: composed_id
   });
 
-  return {n_results, composed_id}
+  return {n_results, composed_id, recommended_songs}
 }
 
 const downloadSongRequest = async (composed_id, ranking) => {

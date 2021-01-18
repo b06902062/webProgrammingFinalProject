@@ -58,7 +58,7 @@ export function useCanvas(){
     const canvasWidth = 0.8*window_width - 0.8*window_width % n_grids;
     const canvasHeight = Math.floor(canvasWidth / n_grids) * n_pitch/2;
     const gridSize = Math.floor(canvasWidth / n_grids);
-    console.log("width, height, gridSize of drawCanvas:", canvasWidth, canvasHeight, gridSize);
+    //console.log("width, height, gridSize of drawCanvas:", canvasWidth, canvasHeight, gridSize);
 
     return [canvasRef, canvasWidth, canvasHeight, gridSize, n_grids, n_pitch, n_bars, n_grids_per_bar, window_width, window_height];
 }
