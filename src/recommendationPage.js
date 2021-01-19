@@ -83,8 +83,8 @@ function RecPage(props) {
   const [isDownloading, setIsDownloading] = useState(new Array(props.n_results+1).fill(false))
   const [isLike, setIsLike] = useState(new Array(props.n_results).fill(false))
   const [isDisLike, setIsDisLike] = useState(new Array(props.n_results).fill(false))
-  const [likeCount, setLikeCount] = useState(new Array(props.n_results).fill(0))
-  const [disLikeCount, setDisLikeCount] = useState(new Array(props.n_results).fill(0))
+  const [likeCount, setLikeCount] = useState(props.recommendations.map(e=>(e.likes)))
+  const [disLikeCount, setDisLikeCount] = useState(props.recommendations.map(e=>(e.dislikes)))
 
   const downloadFunc = async (index) => {
     setIsDownloading(isDownloading.map((ele, ind)=>(
@@ -111,7 +111,8 @@ function RecPage(props) {
       setIsLike(isLike.map((e, i)=>(i===ind? false:e)))
     }
 
-    let result = await rateSongRequest(props.recommendations.composed_id, deltaLike, deltaDisLike)
+    let result = await rateSongRequest(props.recommendations[ind].composed_id, deltaLike, deltaDisLike)
+    //console.log(result)
     setLikeCount(likeCount.map((e, i)=>(i===ind? result.likes:e)))
     setDisLikeCount(disLikeCount.map((e, i)=>(i===ind? result.dislikes:e)))
   }
@@ -153,71 +154,115 @@ function RecPage(props) {
         width={canvasWidth}
         height={canvasHeight}
         unDisplay
-        />  
-      <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
-        <div id='play'>
-          <button className='my-button1' onClick={()=>play(0)}
-            style={{color: isAnyonePlaying&&!isPlaying[0]? 'grey' : isPlaying[0]? 'lightpink':'aquamarine'}}
-            disabled={isAnyonePlaying&&!isPlaying[0]}>
-            {isPlaying[0]?
-              <PauseCircleFilled title="Pause"/> : 
-              <PlayCircleFilled title="Play"/>}
-          </button>
+        />
+      <Space direction='vertical'>
+        <div style={{'textAlign': 'start', color:'azure'}}>
+          Your Composition
         </div>
-        <div className='image-container' id='song-image'>
-          <img src={`${myImg[0]}`}/>
-        </div>
-        <div id='like-status' className="my-button1" 
-          style={{ width: '80px', color: props.likeStatus?'greenyellow':'red'}}>
-          {props.likeStatus? <LikeFilled title='You liked it'/> : <DislikeFilled title='You disliked it'/>}
-        </div>
-        <div id="download">
-          <button 
-            className={(isDownloading[0]) ? "my-button1 button-move color1" : "my-button1 color1"} 
-            onClick={() => downloadFunc(0)}
-          >
-            <DownloadOutlined title="Download my song" />
-          </button>
-        </div>
+        <Space className='unit-container'
+          direction='horizontal' split={<Divider type='vertical'/>}>
+          <div id='play'>
+            <button className='my-button1' onClick={()=>play(0)}
+              style={{color: isAnyonePlaying&&!isPlaying[0]? 'grey' : isPlaying[0]? 'lightpink':'aquamarine'}}
+              disabled={isAnyonePlaying&&!isPlaying[0]}>
+              {isPlaying[0]?
+                <PauseCircleFilled title="Pause"/> : 
+                <PlayCircleFilled title="Play"/>}
+            </button>
+          </div>
+          <div className='image-container' id='song-image'>
+            <img src={`${myImg[0]}`} style={{height:160, width:canvasWidth}}/>
+          </div>
+          <div>
+            <div style={{height:'36px'}}/>
+            <div id='like-status' className="my-button1" 
+              style={{ width: '80px', color: props.likeStatus?'greenyellow':'red'}}>
+              {props.likeStatus? <LikeFilled/> : <DislikeFilled/>}
+            </div>
+            <div style={{height:'36px'}}>
+              <Title strong style={{fontSize:'12px', color:'azure'}}>
+                {props.likeStatus? <>You<br/>Liked It</> : <>You<br/>Disliked It</>}
+              </Title>
+            </div>
+          </div>
+          <div id="download">
+            <div style={{height:'36px'}}/>
+            <button 
+              className={(isDownloading[0]) ? "my-button1 button-move color1" : "my-button1 color1"} 
+              onClick={() => downloadFunc(0)}>
+              <DownloadOutlined/>
+            </button>
+            <div style={{height:'36px'}}>
+              <Title strong style={{fontSize:'12px', color:'azure'}}>Get<br/>Audio</Title>
+            </div>
+          </div>
+        </Space>
       </Space>
       
-      <Space className='rec-page-down' direction='vertical'>
+      <Space direction='vertical'>
+        <div style={{'textAlign': 'start', color:'azure'}}>
+          Recommended To You
+        </div>
         {props.recommendations.map((ele, ind)=>(
           <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
-            <div id='play'>
-              <button className='my-button1' onClick={()=>play(ind+1)}
-                style={{color: isAnyonePlaying&&!isPlaying[ind+1]? 'grey' : isPlaying[ind+1]? 'lightpink':'aquamarine'}}
-                disabled={isAnyonePlaying&&!isPlaying[ind+1]}>
-                {isPlaying[ind+1]?
-                  <PauseCircleFilled title="Pause"/> : 
-                  <PlayCircleFilled title="Play"/>}
-              </button>
+            <div id='left'>
+              <div style={{height:'36px'}}>
+                <Text strong style={{color:'aliceblue'}} >#{ind+1}</Text>
+              </div>
+              <div id='play'>
+                <button className='my-button1' onClick={()=>play(ind+1)}
+                  style={{color: isAnyonePlaying&&!isPlaying[ind+1]? 'grey' : isPlaying[ind+1]? 'lightpink':'aquamarine'}}
+                  disabled={isAnyonePlaying&&!isPlaying[ind+1]}>
+                  {isPlaying[ind+1]?
+                    <PauseCircleFilled title="Pause"/> : 
+                    <PlayCircleFilled title="Play"/>}
+                </button>
+              </div>
+              <div style={{height:'36px'}}/>
             </div>
             <div className='image-container' id='song-image'>
-              <img src={`${myImg[ind+1]}`}/>
+              <img src={`${myImg[ind+1]}`} style={{height:160, width:canvasWidth}}/>
             </div>
             <Space style={{ width: '80px'}}>
-              <button 
-                className="my-button1 color3" 
-                style={{color: isLike[ind]? 'azure' : 'grey'}}
-                onClick={() => pressLikeButt(ind, true)}>
-                {isLike[ind]? <LikeFilled title='Cancel Like'/> : <LikeOutlined title='Like'/>}
-              </button>
-              <button 
-                className="my-button1 color3"
-                style={{color: isDisLike[ind]? 'azure' : 'grey'}}
-                onClick={() => pressLikeButt(ind, false)}>
-                {isDisLike[ind]? <DislikeFilled title='Cancel Dislike'/> : <DislikeOutlined title='Dislike'/>}
-              </button>
+              <div>
+                <div style={{height:'36px'}}/>
+                <button 
+                  className="my-button1 color3" 
+                  style={{color: isLike[ind]? 'greenyellow':'grey'}}
+                  onClick={() => pressLikeButt(ind, true)}>
+                  {isLike[ind]? <LikeFilled title='Cancel Like'/> : <LikeOutlined title='Like'/>}
+                </button>
+                <div style={{height:'36px'}}>
+                  <Title strong style={{fontSize:'20px', color:'azure'}}>{likeCount[ind]}</Title>
+                </div>
+              </div>
+              <div>
+                <div style={{height:'36px'}}/>
+                <button 
+                  className="my-button1 color3"
+                  style={{color: isDisLike[ind]? 'red' : 'grey'}}
+                  onClick={() => pressLikeButt(ind, false)}>
+                  {isDisLike[ind]? <DislikeFilled title='Cancel Dislike'/> : <DislikeOutlined title='Dislike'/>}
+                </button>
+                <div style={{height:'36px'}}>
+                  <Title strong style={{fontSize:'20px', color:'azure'}}>{disLikeCount[ind]}</Title>
+                </div>
+              </div>
             </Space>
+            <Space>
             <div id="download">
+              <div style={{height:'36px'}}/>
               <button 
                 className={(isDownloading[ind+1]) ? "my-button1 button-move color1" : "my-button1 color1"} 
                 onClick={() => downloadFunc(ind+1)}
                 disabled={!(isLike[ind]||isDisLike[ind])}>
                 <DownloadOutlined title={!(isLike[ind]||isDisLike[ind])?'Rate to download':"Download this song"} />
               </button>
+              <div style={{height:'36px'}}>
+                <Title strong style={{fontSize:'20px', color:'azure'}}>{props.recommendations[ind].downloads}</Title>
+              </div>
             </div>
+            </Space>
           </Space>
         ))}
       </Space>

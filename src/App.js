@@ -356,13 +356,13 @@ function App() {
                   <Space>
                     <button 
                       className="my-button1 color3" 
-                      style={{color: isLike? 'azure' : 'grey'}}
+                      style={{color: isLike? 'greenyellow' : 'grey'}}
                       onClick={() => pressLikeButt(true)}>
                       {isLike? <LikeFilled title='Cancel Like'/> : <LikeOutlined title='Like'/>}
                     </button>
                     <button 
                       className="my-button1 color3"
-                      style={{color: isDisLike? 'azure' : 'grey'}}
+                      style={{color: isDisLike? 'red' : 'grey'}}
                       onClick={() => pressLikeButt(false)}>
                       {isDisLike? <DislikeFilled title='Cancel Dislike'/> : <DislikeOutlined title='Dislike'/>}
                     </button>
