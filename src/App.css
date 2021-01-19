@@ -225,3 +225,15 @@
     -o-animation: fadein 1s; /* Opera < 12.1 */
        animation: fadein 1s;
 }
+
+.id-container{
+  width: 60%;
+  left: 20%;
+  position: relative;
+  background-color: rgba(176, 196, 222, 0.2);
+  border: 0px rgba(72, 72, 72, 1) solid;
+  border-radius: 10px;
+  padding-bottom: 4px;
+  padding-top: 6px;
+  margin-bottom: 6px;
+}

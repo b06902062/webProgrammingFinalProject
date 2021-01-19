@@ -286,6 +286,8 @@ function App() {
     setIsDisLike(false)
     setRecommendationPage(false)
   }
+
+  const buttonSize = Math.min(Math.floor(canvasHeight*0.12), 50)
   
   return (
     <div className="App">
@@ -307,10 +309,13 @@ function App() {
             <div style={{position: "relative", width:window_width, height:(canvasHeight+0.1*window_height)}}>
               {originPage?
                 <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
-                  <Title strong level={3} style={{color:'CornflowerBlue'}}>Original Song</Title>
-                  <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
+                  <div className='id-container'>
+                    <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Original</Text>
+                    <br/>
+                    <Text strong style={{fontSize:buttonSize*0.5, color:'DarkCyan'}}> Song&nbsp;{refId} </Text>
+                  </div>
                   <div id="play">
-                    <button className="my-button1" style={{color: isPlayingInit? 'lightpink':'aquamarine'}} 
+                    <button className="my-button1" style={{fontSize: buttonSize ,color: isPlayingInit? 'lightpink':'aquamarine'}} 
                       onClick={playButton("i")} disabled={refId===-1}>
                       {isPlayingInit? 
                       <PauseCircleFilled title="Pause"/> : 
@@ -318,24 +323,26 @@ function App() {
                       </button>
                     </div>
                   <div id="back2default">
-                    <button className="my-button1 color3" onClick={defaultToggleFunc}>
+                    <button className="my-button1 color3" style={{fontSize: buttonSize}} onClick={defaultToggleFunc}>
                       <RedoOutlined title="Set Tuners to Default"/>
                       </button>
                     </div>
                   <div id="request">
                       <button 
                         className={isComposing ? "my-button1 color1 spinner" : "my-button1 color1"}
+                        style={{fontSize: buttonSize}}
                         onClick={composeFunc} 
                         disabled={isComposing}
                       >
                         {/* <SlidersFilled title={hasComposed? "Recompose":"Compose"}/>  */}
-                        <MusicNoteRounded style={{fontSize: '36px'}} titleAccess={isComposing? "Composing..." : hasComposed? "Recompose" : "Compose"}/>
+                        <MusicNoteRounded style={{fontSize: buttonSize}} titleAccess={isComposing? "Composing..." : hasComposed? "Recompose" : "Compose"}/>
                       </button>
                   </div>
                   { hasComposed && !isComposing &&
                     <div id="nextpage">
                       <button className="my-button1 color2"
                         onClick={()=>setOriginPage(false)}
+                        style={{fontSize: buttonSize}}
                         disabled={isPlayingInit}>
                         <ArrowRightOutlined title="See My Song"/>
                       </button>
@@ -344,10 +351,13 @@ function App() {
                 </div>
                 :
                 <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
-                  <Title strong level={3} style={{color:'CornflowerBlue'}}>Your Song</Title>
-                  <Title strong underline level={5} style={{color:'DarkCyan'}}>ID:&nbsp;{refId}</Title>
+                  <div className='id-container'>
+                    <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Yours</Text>
+                    <br/>
+                    <Text strong style={{fontSize:buttonSize*0.5,  color:'DarkCyan'}}>Song&nbsp;{refId}</Text>
+                  </div>
                   <div id="play">
-                    <button className="my-button1" style={{color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
+                    <button className="my-button1" style={{fontSize: buttonSize, color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
                       {(isPlayingComposed)? 
                       <PauseCircleFilled title="Pause"/> : 
                       <PlayCircleFilled title="Play"/>}
@@ -356,13 +366,13 @@ function App() {
                   <Space>
                     <button 
                       className="my-button1 color3" 
-                      style={{color: isLike? 'greenyellow' : 'grey'}}
+                      style={{fontSize: buttonSize, color: isLike? 'greenyellow' : 'grey'}}
                       onClick={() => pressLikeButt(true)}>
                       {isLike? <LikeFilled title='Cancel Like'/> : <LikeOutlined title='Like'/>}
                     </button>
                     <button 
                       className="my-button1 color3"
-                      style={{color: isDisLike? 'red' : 'grey'}}
+                      style={{fontSize: buttonSize, color: isDisLike? 'red' : 'grey'}}
                       onClick={() => pressLikeButt(false)}>
                       {isDisLike? <DislikeFilled title='Cancel Dislike'/> : <DislikeOutlined title='Dislike'/>}
                     </button>
@@ -370,6 +380,7 @@ function App() {
                   <div id="recommand">
                     <button 
                       className="my-button1 color1"
+                      style={{fontSize: buttonSize}}
                       onClick={() => requestRecommendations()}
                       disabled={!(isLike||isDisLike)}>
                       <StarFilled title={(isLike||isDisLike)?"Recommendations":"Like or dislike to get recommendations :)"}/>
@@ -378,6 +389,7 @@ function App() {
                   <div id="prevpage">
                     <button 
                       className="my-button1 color2"
+                      style={{fontSize: buttonSize}}
                       onClick={()=>setOriginPage(true)}
                       disabled={isPlayingComposed}
                     >
