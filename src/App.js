@@ -337,8 +337,8 @@ function App() {
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'cornflowerblue'}}>Original</Text>
                     <br/>
                     <Text strong style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> Song </Text>
-                    <Text strong editable={(refId === -1)? {onChange:setRequestId, editing:false} : {onChange:setRequestId}}
-                      style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> {(refId === -1)? '' : refId} </Text>
+                    <Text strong editable={(refId === -1)? {onChange:setRequestId, editing:false} : {onChange:setRequestId, tooltip:'type 0~99 to get another song'}}
+                      style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> {(refId === -1)? '' : `#${refId}`} </Text>
                   </div>
                   <div id="play">
                     <button className="my-button1" style={{fontSize: buttonSize ,color: isPlayingInit? 'lightpink':'aquamarine'}} 
@@ -380,7 +380,7 @@ function App() {
                   <div className='id-container'>
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Yours</Text>
                     <br/>
-                    <Text strong style={{fontSize:buttonSize*0.5,  color:'LightBlue'}}>Song&nbsp;{(refId == -1)? '' : refId}</Text>
+                    <Text strong style={{fontSize:buttonSize*0.5,  color:'LightBlue'}}>Song&nbsp;{(refId == -1)? '' : `#${refId}`}</Text>
                   </div>
                   <div id="play">
                     <button className="my-button1" style={{fontSize: buttonSize, color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>

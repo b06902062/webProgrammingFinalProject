@@ -351,7 +351,13 @@ function RecPage(props) {
           color="default"
           startIcon={<HomeRoundedIcon style={{fontSize: '30px'}}/>}
           size="large"
-          onClick={props.goback}
+          onClick={()=>{
+            pianoPlayer.stop()
+            setIsPlaying(isPlaying.map(e=>false))
+            setIsAnyonePlaying(false)
+            clearTimeout(timeOutButt)
+            props.goback()
+          }}
         >
           Back to Compose
         </ActionButton>
