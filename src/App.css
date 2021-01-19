@@ -138,6 +138,10 @@
   color:darkgrey;
 }
 
+/* .my-button1:hover:enabled {
+  text-shadow: 2px, 2px, peachpuff;
+} */
+
 .my-button2{
   font-size: 20px;
   color: PeachPuff;
@@ -146,10 +150,15 @@
   margin:0;
   padding:0;
   outline:none;
+  transition: all 0.5s;
 }
 
 .my-button2:disabled{
-  color:darkgrey;
+  opacity: 0.4;
+}
+
+.my-button2:enabled:hover {
+  cursor: pointer;
 }
 
 .image-container{
@@ -236,4 +245,30 @@
   padding-bottom: 4px;
   padding-top: 6px;
   margin-bottom: 6px;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@-moz-keyframes blinker {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Safari, Chrome and Opera > 12.1 */
+@-webkit-keyframes blinker {
+  50% {
+    opacity: 0.4;
+  }
+}
+
+/* Internet Explorer */
+@-ms-keyframes blinker {
+  50% {
+    opacity: 0.4;
+  }
 }

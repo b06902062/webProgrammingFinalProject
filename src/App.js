@@ -312,7 +312,7 @@ function App() {
                   <div className='id-container'>
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Original</Text>
                     <br/>
-                    <Text strong style={{fontSize:buttonSize*0.5, color:'DarkCyan'}}> Song&nbsp;{refId} </Text>
+                    <Text strong style={{fontSize:buttonSize*0.5, color:'DarkCyan'}}> Song&nbsp;{(refId == -1)? '' : refId} </Text>
                   </div>
                   <div id="play">
                     <button className="my-button1" style={{fontSize: buttonSize ,color: isPlayingInit? 'lightpink':'aquamarine'}} 
@@ -354,7 +354,7 @@ function App() {
                   <div className='id-container'>
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Yours</Text>
                     <br/>
-                    <Text strong style={{fontSize:buttonSize*0.5,  color:'DarkCyan'}}>Song&nbsp;{refId}</Text>
+                    <Text strong style={{fontSize:buttonSize*0.5,  color:'DarkCyan'}}>Song&nbsp;{(refId == -1)? '' : refId}</Text>
                   </div>
                   <div id="play">
                     <button className="my-button1" style={{fontSize: buttonSize, color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
@@ -382,7 +382,7 @@ function App() {
                       className="my-button1 color1"
                       style={{fontSize: buttonSize}}
                       onClick={() => requestRecommendations()}
-                      disabled={!(isLike||isDisLike)}>
+                      disabled={!(isLike||isDisLike) || isPlayingComposed}>
                       <StarFilled title={(isLike||isDisLike)?"Recommendations":"Like or dislike to get recommendations :)"}/>
                     </button>
                   </div>
