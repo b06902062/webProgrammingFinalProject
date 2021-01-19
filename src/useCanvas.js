@@ -7,6 +7,17 @@ const n_grids = n_grids_per_bar * n_bars; // number of grids in horizontal direc
 const n_pitch = 88; // number of grids in vertical direction
 /* ========================================================================== */
 
+const colors = [
+  'aqua', 'cornflowerblue', 'lightblue', 'lightcyan',
+  'darksalmon', 'coral', 'lightsalmon', 'orange',
+  'orangered', 'tomato', 'sandybrown', 'peru'
+]
+const colors1 = [
+  'mediumorchid', 'paleturqoise', 'salmon', 'mediumseagreen',
+  'navajowhite', 'hotpink', 'gold', 'turqoise',
+  'violet', 'palegreen', 'tomato', 'skyblue'
+]
+
 /* Change window size when resizing window */
 export function useWindowSize() {
   const [size, setSize] = useState([0, 0]);
@@ -21,18 +32,8 @@ export function useWindowSize() {
   return size;
 }
 
-export function myDraw(canvasHeight, n_grids, nPitch, gridSize, notes, ctx) {
+export function myDraw(canvasHeight, n_grids, nPitch, gridSize, notes, ctx, fullcolor) {
   const halfGridSize = Math.floor(gridSize/2);
-  const colors = [
-    'aqua', 'cornflowerblue', 'lightblue', 'lightcyan',
-    'darksalmon', 'coral', 'lightslamon', 'orange',
-    'orangered', 'tomato', 'sandybrown', 'peru'
-  ]
-  const colors1 = [
-    'mediumorchid', 'paleturqoise', 'salmon', 'mediumseagreen',
-    'navajowhite', 'hotpink', 'gold', 'turqoise',
-    'violet', 'palegreen', 'tomato', 'skyblue'
-  ]
   ctx.restore();
   ctx.beginPath();
   ctx.clearRect(0, 0, gridSize * n_grids, halfGridSize * nPitch)
@@ -43,7 +44,8 @@ export function myDraw(canvasHeight, n_grids, nPitch, gridSize, notes, ctx) {
     }
     ctx.restore();
     ctx.fillStyle = colors[note.key%12];
-    ctx.globalAlpha = note.gain;
+    ctx.globalAlpha = fullcolor? 0.8 : note.gain;
+    ctx.clearRect(note.start * gridSize, canvasHeight - note.key * halfGridSize, (note.duration-0.5) * gridSize, halfGridSize);
     ctx.fillRect(note.start * gridSize, canvasHeight - note.key * halfGridSize, (note.duration-0.5) * gridSize, halfGridSize);
   }
 

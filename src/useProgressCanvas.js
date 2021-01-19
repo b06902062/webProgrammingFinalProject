@@ -21,7 +21,7 @@ export function useProgressCanvas(){
     const halfGridSize = Math.floor(gridSize/2);
     const colors = [
       'aqua', 'cornflowerblue', 'lightblue', 'lightcyan',
-      'darksalmon', 'coral', 'lightslamon', 'orange',
+      'darksalmon', 'coral', 'lightsalmon', 'orange',
       'orangered', 'tomato', 'sandybrown', 'peru'
     ]
     ctx.restore();

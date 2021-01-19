@@ -247,6 +247,10 @@
   margin-bottom: 6px;
 }
 
+.home-button-container {
+  margin-bottom: 20px;
+}
+
 @keyframes blinker {
   50% {
     opacity: 0.4;

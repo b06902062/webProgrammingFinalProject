@@ -46,7 +46,7 @@ function RecPage(props) {
     })
   }
 
-  const myPlayer = (player, notes, tempo, setFunc) => {
+  const myPlayer = (player, notes, tempo, index) => {
     return new Promise((resolve) => {
       const noteSched = notes.map(midi2Play(tempo))
       const timeoutSec = 1000 * (noteSched[ noteSched.length - 1 ].time + noteSched[ noteSched.length - 1 ].duration);
@@ -54,7 +54,7 @@ function RecPage(props) {
       player.schedule(ac.currentTime, noteSched)
       
       timeOutButt = setTimeout(() => {
-       setFunc()
+       setIsPlaying(isPlaying.map((ele, ind)=>(ind === index? false : ele)))
        setIsAnyonePlaying(false)
        resolve()
       }, timeoutSec)
@@ -74,7 +74,7 @@ function RecPage(props) {
     else{
       setFunc()
       setIsAnyonePlaying(true)
-      await myPlayer(pianoPlayer, notes, index===0? props.composedSong.tempo : props.recommendations[index-1].tempo, setFunc)
+      await myPlayer(pianoPlayer, notes, index===0? props.composedSong.tempo : props.recommendations[index-1].tempo, index)
     }
   }
 
@@ -148,7 +148,7 @@ function RecPage(props) {
       
       for(let i = 0; i < props.n_results+1; i++){
         let notes = (i===0)? props.composedSong.notes.map(midi2Show) : props.recommendations[i-1].notes.map(midi2Show);
-        myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
+        myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx, true);
         let img = canvas.toDataURL('image/png')
         newImageArray[i] = img;
       }
@@ -214,7 +214,7 @@ function RecPage(props) {
           ind===0?
           <div>
             <div className='name-tag' style={{width:'36%'}}>
-              Recommended To You
+              Recommended to You
             </div>
             <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
               <div id='left'>
@@ -340,7 +340,7 @@ function RecPage(props) {
           </Space>
         ))}
       </Space>
-      <div>
+      <div className='home-button-container'>
         {/* <button className='my-button1' onClick={props.goback}>
           <HomeOutlined />
         </button>
