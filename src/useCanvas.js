@@ -45,7 +45,6 @@ export function myDraw(canvasHeight, n_grids, nPitch, gridSize, notes, ctx, full
     ctx.restore();
     ctx.fillStyle = colors[note.key%12];
     ctx.globalAlpha = fullcolor? 0.8 : note.gain;
-    ctx.clearRect(note.start * gridSize, canvasHeight - note.key * halfGridSize, (note.duration-0.5) * gridSize, halfGridSize);
     ctx.fillRect(note.start * gridSize, canvasHeight - note.key * halfGridSize, (note.duration-0.5) * gridSize, halfGridSize);
   }
 
