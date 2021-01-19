@@ -148,7 +148,7 @@ function RecPage(props) {
       
       for(let i = 0; i < props.n_results+1; i++){
         let notes = (i===0)? props.composedSong.notes.map(midi2Show) : props.recommendations[i-1].notes.map(midi2Show);
-        myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx);
+        myDraw(canvasHeight, nGrids, nPitch, gridSize, notes, ctx, true);
         let img = canvas.toDataURL('image/png')
         newImageArray[i] = img;
       }
@@ -214,7 +214,7 @@ function RecPage(props) {
           ind===0?
           <div>
             <div className='name-tag' style={{width:'36%'}}>
-              Recommended To You
+              Recommended to You
             </div>
             <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
               <div id='left'>
