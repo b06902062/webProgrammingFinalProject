@@ -46,7 +46,7 @@ function RecPage(props) {
     })
   }
 
-  const myPlayer = (player, notes, tempo, setFunc) => {
+  const myPlayer = (player, notes, tempo, index) => {
     return new Promise((resolve) => {
       const noteSched = notes.map(midi2Play(tempo))
       const timeoutSec = 1000 * (noteSched[ noteSched.length - 1 ].time + noteSched[ noteSched.length - 1 ].duration);
@@ -54,7 +54,7 @@ function RecPage(props) {
       player.schedule(ac.currentTime, noteSched)
       
       timeOutButt = setTimeout(() => {
-       setFunc()
+       setIsPlaying(isPlaying.map((ele, ind)=>(ind === index? false : ele)))
        setIsAnyonePlaying(false)
        resolve()
       }, timeoutSec)
@@ -74,7 +74,7 @@ function RecPage(props) {
     else{
       setFunc()
       setIsAnyonePlaying(true)
-      await myPlayer(pianoPlayer, notes, index===0? props.composedSong.tempo : props.recommendations[index-1].tempo, setFunc)
+      await myPlayer(pianoPlayer, notes, index===0? props.composedSong.tempo : props.recommendations[index-1].tempo, index)
     }
   }
 
@@ -340,7 +340,7 @@ function RecPage(props) {
           </Space>
         ))}
       </Space>
-      <div>
+      <div className='home-button-container'>
         {/* <button className='my-button1' onClick={props.goback}>
           <HomeOutlined />
         </button>
