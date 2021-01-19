@@ -51,14 +51,9 @@ function App() {
   const [recommendationPage, setRecommendationPage] = useState(false)
   const [recommandProps, setRecommendationProps] = useState()
 
-  const nextPage = (flag)=>{
-    console.log(flag)
-    setOriginPage(flag)
-  }
-
   const requestRecommendations = async()=>{
     let result = await getRecommendationsRequest(refId, composedId);
-    console.log(result.n_results, result.composed_id, result.recommended_songs)
+    //console.log(result.n_results, result.composed_id, result.recommended_songs)
     setRecommendationProps(result)
     setRecommendationPage(true)
   }
@@ -215,7 +210,6 @@ function App() {
   const [tempo, setTempo] = useState(120)
   const [isComposing, setIsComposing] = useState(false)
   const [hasComposed, setHasComposed] = useState(false)
-  const [isDownloading, setIsDownloading] = useState(false)
 
   useEffect( async () => {
     if(!hasRequested){
@@ -230,7 +224,7 @@ function App() {
       setRhythm(initPiece.attr_cls.rhythm);
       setDefaultPR([initPiece.attr_cls.polyph, initPiece.attr_cls.rhythm])
     }
-  }, [])
+  }, [hasRequested])
 
   const composeFunc = async () => {
     setIsComposing(true);
@@ -246,13 +240,6 @@ function App() {
     setComposedId(composedPiece.composed_id);
     setIsComposing(false);
     setHasComposed(true);
-  }
-
-  const downloadFunc = async (composed_id, ranking) => {
-    // console.log('[ranking]', ranking)
-    setIsDownloading(true)
-    const songData = await downloadSongRequest(composed_id, ranking);
-    setIsDownloading(false)
   }
 
   /***** Canvas render *****/
@@ -286,6 +273,19 @@ function App() {
 
   const passedRhythm = (originPage)? rhythm : composedRhythm;
   const passedPolyph = (originPage)? polyph : composedPolyph;
+
+  const initEverything = ()=>{
+    setInitNotes([])
+    setRefId(-1)
+    setPolyph(polyph.map(e=>0))
+    setRhythm(rhythm.map(e=>0))
+    setOriginPage(true)
+    setHasRequested(false)
+    setHasComposed(false)
+    setIsLike(false)
+    setIsDisLike(false)
+    setRecommendationPage(false)
+  }
   
   return (
     <div className="App">
@@ -299,7 +299,7 @@ function App() {
               dislikes:disLikeCount, likes:likeCount, downloads:0, ranking:-1
             }}
             n_results={recommandProps.n_results}
-            goback={()=>setRecommendationPage(false)}
+            goback={()=>initEverything()}
             likeStatus={isLike}
           />
           :
@@ -335,7 +335,7 @@ function App() {
                   { hasComposed && !isComposing &&
                     <div id="nextpage">
                       <button className="my-button1 color2"
-                        onClick={()=>nextPage(false)}
+                        onClick={()=>setOriginPage(false)}
                         disabled={isPlayingInit}>
                         <ArrowRightOutlined title="See My Song"/>
                       </button>
@@ -375,19 +375,11 @@ function App() {
                       <StarFilled title={(isLike||isDisLike)?"Recommendations":"Like or dislike to get recommendations :)"}/>
                     </button>
                   </div>
-                  {/* <div id="download">
-                    <button 
-                      className={(isDownloading) ? "my-button1 button-move color1" : "my-button1 color1"} 
-                      onClick={() => downloadFunc(composedId, -1)}
-                    >
-                      <DownloadOutlined title="Download My Song" />
-                    </button>
-                  </div> */}
                   <div id="prevpage">
                     <button 
                       className="my-button1 color2"
-                      onClick={()=>nextPage(true)}
-                      disabled={isDownloading || isPlayingComposed}
+                      onClick={()=>setOriginPage(true)}
+                      disabled={isPlayingComposed}
                     >
                       <ArrowLeftOutlined title="See Original Song"/>
                     </button>

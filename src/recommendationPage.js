@@ -16,8 +16,12 @@ import {
   LikeFilled,
   DislikeOutlined,
   DislikeFilled,
+  HomeOutlined
 } from '@ant-design/icons';
 import { Space, Divider, Typography, Spin } from 'antd';
+import { Button } from '@material-ui/core';
+import HomeRoundedIcon from '@material-ui/icons/HomeRounded';
+import { ActionButton } from './customButtonStyle'
 
 const { Title, Text } = Typography;
 
@@ -85,6 +89,7 @@ function RecPage(props) {
   const [isDisLike, setIsDisLike] = useState(new Array(props.n_results).fill(false))
   const [likeCount, setLikeCount] = useState(props.recommendations.map(e=>(e.likes)))
   const [disLikeCount, setDisLikeCount] = useState(props.recommendations.map(e=>(e.dislikes)))
+  const [downloadCount, setDownloadCount] = useState(props.recommendations.map(e=>(e.downloads)))
 
   const downloadFunc = async (index) => {
     setIsDownloading(isDownloading.map((ele, ind)=>(
@@ -94,6 +99,11 @@ function RecPage(props) {
     setIsDownloading(isDownloading.map((ele, ind)=>(
       (ind === index)? false: ele
     )))
+    if(index!==0){
+      setDownloadCount(downloadCount.map((ele, ind)=>(
+        (ind === index-1)? ele+1: ele
+      )))
+    }
   }
 
   const pressLikeButt = async(ind, flag)=>{
@@ -118,7 +128,7 @@ function RecPage(props) {
   }
 
   /***** Canvas render *****/
-  const [myImg, setMyImg] = useState([])
+  const [ myImg, setMyImg ] = useState([])
   const [ canvasRef, canvasWidth, canvasHeight, gridSize, nGrids, nPitch ] = useCanvas(true);
 
   const midi2Show = e => {
@@ -155,8 +165,8 @@ function RecPage(props) {
         height={canvasHeight}
         unDisplay
         />
-      <Space direction='vertical'>
-        <div style={{'textAlign': 'start', color:'azure'}}>
+      <div>
+        <div className='name-tag'>
           Your Composition
         </div>
         <Space className='unit-container'
@@ -197,14 +207,78 @@ function RecPage(props) {
             </div>
           </div>
         </Space>
-      </Space>
+      </div>
       
-      <Space direction='vertical'>
-        <div style={{'textAlign': 'start', color:'azure'}}>
-          Recommended To You
-        </div>
+      <Space direction='vertical' className='recom-list'>
         {props.recommendations.map((ele, ind)=>(
-          <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
+          ind===0?
+          <div>
+            <div className='name-tag' style={{width:'36%'}}>
+              Recommended To You
+            </div>
+            <Space className='unit-container' direction='horizontal' split={<Divider type='vertical'/>}>
+              <div id='left'>
+                <div style={{height:'36px'}}>
+                  <Text strong style={{color:'aliceblue'}} >#{ind+1}</Text>
+                </div>
+                <div id='play'>
+                  <button className='my-button1' onClick={()=>play(ind+1)}
+                    style={{color: isAnyonePlaying&&!isPlaying[ind+1]? 'grey' : isPlaying[ind+1]? 'lightpink':'aquamarine'}}
+                    disabled={isAnyonePlaying&&!isPlaying[ind+1]}>
+                    {isPlaying[ind+1]?
+                      <PauseCircleFilled title="Pause"/> : 
+                      <PlayCircleFilled title="Play"/>}
+                  </button>
+                </div>
+                <div style={{height:'36px'}}/>
+              </div>
+              <div className='image-container' id='song-image'>
+                <img src={`${myImg[ind+1]}`} style={{height:160, width:canvasWidth}}/>
+              </div>
+              <Space style={{ width: '80px'}}>
+                <div>
+                  <div style={{height:'36px'}}/>
+                  <button 
+                    className="my-button1 color3" 
+                    style={{color: isLike[ind]? 'greenyellow':'grey'}}
+                    onClick={() => pressLikeButt(ind, true)}>
+                    {isLike[ind]? <LikeFilled title='Cancel Like'/> : <LikeOutlined title='Like'/>}
+                  </button>
+                  <div style={{height:'36px'}}>
+                    <Title strong style={{fontSize:'20px', color:'azure'}}>{likeCount[ind]}</Title>
+                  </div>
+                </div>
+                <div>
+                  <div style={{height:'36px'}}/>
+                  <button 
+                    className="my-button1 color3"
+                    style={{color: isDisLike[ind]? 'red' : 'grey'}}
+                    onClick={() => pressLikeButt(ind, false)}>
+                    {isDisLike[ind]? <DislikeFilled title='Cancel Dislike'/> : <DislikeOutlined title='Dislike'/>}
+                  </button>
+                  <div style={{height:'36px'}}>
+                    <Title strong style={{fontSize:'20px', color:'azure'}}>{disLikeCount[ind]}</Title>
+                  </div>
+                </div>
+              </Space>
+              <Space>
+              <div id="download">
+                <div style={{height:'36px'}}/>
+                <button 
+                  className={(isDownloading[ind+1]) ? "my-button1 button-move color1" : "my-button1 color1"} 
+                  onClick={() => downloadFunc(ind+1)}
+                  disabled={!(isLike[ind]||isDisLike[ind])}>
+                  <DownloadOutlined title={!(isLike[ind]||isDisLike[ind])?'Rate to download':"Download this song"} />
+                </button>
+                <div style={{height:'36px'}}>
+                  <Title strong style={{fontSize:'20px', color:'azure'}}>{downloadCount[ind]}</Title>
+                </div>
+              </div>
+              </Space>
+            </Space>
+          </div>
+          :
+          <Space className='unit-container1' direction='horizontal' split={<Divider type='vertical'/>}>
             <div id='left'>
               <div style={{height:'36px'}}>
                 <Text strong style={{color:'aliceblue'}} >#{ind+1}</Text>
@@ -259,14 +333,29 @@ function RecPage(props) {
                 <DownloadOutlined title={!(isLike[ind]||isDisLike[ind])?'Rate to download':"Download this song"} />
               </button>
               <div style={{height:'36px'}}>
-                <Title strong style={{fontSize:'20px', color:'azure'}}>{props.recommendations[ind].downloads}</Title>
+                <Title strong style={{fontSize:'20px', color:'azure'}}>{downloadCount[ind]}</Title>
               </div>
             </div>
             </Space>
           </Space>
         ))}
       </Space>
-      <button className='my-button1' onClick={props.goback}>go back</button>
+      <div>
+        {/* <button className='my-button1' onClick={props.goback}>
+          <HomeOutlined />
+        </button>
+        Home Page */}
+        <ActionButton
+          variant="contained"
+          color="default"
+          startIcon={<HomeRoundedIcon style={{fontSize: '30px'}}/>}
+          size="large"
+          onClick={props.goback}
+        >
+          Back to Compose
+        </ActionButton>
+      </div>
+      
     </Space>
   );
 }

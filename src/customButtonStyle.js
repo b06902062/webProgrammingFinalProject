@@ -4,8 +4,9 @@ import { Button } from '@material-ui/core';
 const ActionButton = withStyles({
   root: {
     textTransform: 'none',
-    justifyContent: 'left',
-    width: '150px'
+    backgroundColor: 'cornflowerblue',
+    fontFamily: 'Segoe UI',
+    fontSize: '20px',
   }
 })(Button);
 

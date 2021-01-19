@@ -65,7 +65,7 @@ export function useGridCanvas(recPage){
         draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar);
       }
       
-    }, [canvasWidth, canvasHeight, gridSize]);
+    }, [canvasWidth, canvasHeight, gridSize, recPage]);
 
     return [ canvasRef ];
 }
