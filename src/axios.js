@@ -8,10 +8,14 @@ const statusApi = async () => {
   return
 }
 
-const getInitPiece = async () => {
+const getInitPiece = async (requestId) => {
   const {
     data: {attr_cls, notes, tempo, ref_id}
-  } = await instance.get('/get_init_sample');
+  } = (requestId < 0) || (requestId > 99)? 
+    await instance.get('/get_init_sample') :
+    await instance.post('/get_init_sample', {
+      ref_id: requestId
+    })
   return {attr_cls, notes, tempo, ref_id}
 }
 
@@ -53,6 +57,7 @@ const getRecommendationsRequest = async (ref_id, composed_id) => {
 }
 
 const downloadSongRequest = async (composed_id, ranking) => {
+  //console.log('in download request, id = ', composed_id, 'ranking = ', ranking)
   const { data } = await instance.post('/download', {
     composed_id: composed_id,
     ranking: ranking
@@ -60,8 +65,11 @@ const downloadSongRequest = async (composed_id, ranking) => {
     responseType: 'blob'
   })
 
-  if (ranking === -1) {
+  if (ranking === 0) {
     ranking = 'my_song'
+  }
+  else{
+    ranking = `recommendation_${ranking}`
   }
 
   const downloadUrl = window.URL.createObjectURL(new Blob([data]));

@@ -95,7 +95,8 @@ function RecPage(props) {
     setIsDownloading(isDownloading.map((ele, ind)=>(
       (ind === index)? true: ele
     )))
-    const songData = await downloadSongRequest(props.id, (index===0)?-1:index)
+    const id = index===0? props.id : props.recommendations[index-1].composed_id;
+    const songData = await downloadSongRequest(id, index)
     setIsDownloading(isDownloading.map((ele, ind)=>(
       (ind === index)? false: ele
     )))

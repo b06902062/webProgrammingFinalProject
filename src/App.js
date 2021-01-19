@@ -206,23 +206,26 @@ function App() {
   /***** Webserver requests *****/
   const [hasRequested, setHasRequested] = useState(false)
   const [refId, setRefId] = useState(-1)
+  const [requestId, setRequestId] = useState(-1)
   const [composedId, setComposedId] = useState('');
-  const [tempo, setTempo] = useState(120)
+  const [tempo, setTempo] = useState(119)
   const [isComposing, setIsComposing] = useState(false)
   const [hasComposed, setHasComposed] = useState(false)
 
   useEffect( async () => {
     if(!hasRequested){
-      setHasRequested(true);
       ac = new window.AudioContext();
       pianoPlayer = await Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' });
-      let initPiece = await getInitPiece();
+      //console.log('before calling getinit', requestId)
+      let initPiece = await getInitPiece(requestId);
       setTempo(initPiece.tempo);
       setRefId(initPiece.ref_id);
+      setRequestId(initPiece.ref_id);
       setInitNotes(initPiece.notes);
       setPolyph(initPiece.attr_cls.polyph);
       setRhythm(initPiece.attr_cls.rhythm);
       setDefaultPR([initPiece.attr_cls.polyph, initPiece.attr_cls.rhythm])
+      setHasRequested(true);
     }
   }, [hasRequested])
 
@@ -240,6 +243,8 @@ function App() {
     setComposedId(composedPiece.composed_id);
     setIsComposing(false);
     setHasComposed(true);
+    setIsLike(false)
+    setIsDisLike(false)
   }
 
   /***** Canvas render *****/
@@ -274,18 +279,37 @@ function App() {
   const passedRhythm = (originPage)? rhythm : composedRhythm;
   const passedPolyph = (originPage)? polyph : composedPolyph;
 
-  const initEverything = ()=>{
+  const initEverything = (flag)=>{
+    if(flag){
+      setRequestId(-1)
+    }
     setInitNotes([])
     setRefId(-1)
     setPolyph(polyph.map(e=>0))
     setRhythm(rhythm.map(e=>0))
-    setOriginPage(true)
-    setHasRequested(false)
+    setTempo(119)
     setHasComposed(false)
     setIsLike(false)
     setIsDisLike(false)
+    setOriginPage(true)
+    setHasRequested(false)
     setRecommendationPage(false)
   }
+
+
+  useEffect( () => {
+    if(requestId!==refId){
+      let req = parseInt(requestId, 10)
+      if(Number.isInteger(req) && req>=0 && req<=99){
+        setRequestId(req)
+        initEverything(false)
+      }
+      else{
+        setRequestId(refId)
+      }
+    }
+  }, [requestId])
+
 
   const buttonSize = Math.min(Math.floor(canvasHeight*0.12), 50)
   
@@ -301,7 +325,7 @@ function App() {
               dislikes:disLikeCount, likes:likeCount, downloads:0, ranking:-1
             }}
             n_results={recommandProps.n_results}
-            goback={()=>initEverything()}
+            goback={()=>initEverything(true)}
             likeStatus={isLike}
           />
           :
@@ -310,9 +334,11 @@ function App() {
               {originPage?
                 <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
                   <div className='id-container'>
-                    <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Original</Text>
+                    <Text strong style={{fontSize:buttonSize*0.6,  color:'cornflowerblue'}}>Original</Text>
                     <br/>
-                    <Text strong style={{fontSize:buttonSize*0.5, color:'DarkCyan'}}> Song&nbsp;{(refId == -1)? '' : refId} </Text>
+                    <Text strong style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> Song </Text>
+                    <Text strong editable={(refId === -1)? {onChange:setRequestId, editing:false} : {onChange:setRequestId}}
+                      style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> {(refId === -1)? '' : refId} </Text>
                   </div>
                   <div id="play">
                     <button className="my-button1" style={{fontSize: buttonSize ,color: isPlayingInit? 'lightpink':'aquamarine'}} 
@@ -323,7 +349,7 @@ function App() {
                       </button>
                     </div>
                   <div id="back2default">
-                    <button className="my-button1 color3" style={{fontSize: buttonSize}} onClick={defaultToggleFunc}>
+                    <button className="my-button1 color3" style={{fontSize: buttonSize}} onClick={defaultToggleFunc} disabled={!hasRequested}>
                       <RedoOutlined title="Set Tuners to Default"/>
                       </button>
                     </div>
@@ -332,7 +358,7 @@ function App() {
                         className={isComposing ? "my-button1 color1 spinner" : "my-button1 color1"}
                         style={{fontSize: buttonSize}}
                         onClick={composeFunc} 
-                        disabled={isComposing}
+                        disabled={isComposing||!hasRequested}
                       >
                         {/* <SlidersFilled title={hasComposed? "Recompose":"Compose"}/>  */}
                         <MusicNoteRounded style={{fontSize: buttonSize}} titleAccess={isComposing? "Composing..." : hasComposed? "Recompose" : "Compose"}/>
@@ -354,7 +380,7 @@ function App() {
                   <div className='id-container'>
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Yours</Text>
                     <br/>
-                    <Text strong style={{fontSize:buttonSize*0.5,  color:'DarkCyan'}}>Song&nbsp;{(refId == -1)? '' : refId}</Text>
+                    <Text strong style={{fontSize:buttonSize*0.5,  color:'LightBlue'}}>Song&nbsp;{(refId == -1)? '' : refId}</Text>
                   </div>
                   <div id="play">
                     <button className="my-button1" style={{fontSize: buttonSize, color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
