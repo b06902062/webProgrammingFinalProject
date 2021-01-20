@@ -36,7 +36,7 @@ export function myDraw(canvasHeight, n_grids, nPitch, gridSize, notes, ctx, full
   const halfGridSize = Math.floor(gridSize/2);
   ctx.restore();
   ctx.beginPath();
-  ctx.clearRect(0, 0, gridSize * n_grids, halfGridSize * nPitch)
+  ctx.clearRect(0, 0, gridSize * n_grids, canvasHeight)
 
   for(let note of notes){
     if(note.key < 0 || note.key >= nPitch){
