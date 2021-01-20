@@ -1,6 +1,4 @@
-import os, sys, random
-sys.path.append('../vae_transformer')
-sys.path.append('../vae_transformer/model')
+import os, random
 from datetime import datetime
 
 from flask import Flask, jsonify, request, send_file
@@ -14,20 +12,19 @@ from data_utils import (
   get_sample, 
   idx2event, 
   event2idx, 
-  convert_composition, 
-  draw_pianoroll,
+  convert_composition,
   get_recommended_composition,
   sort_recom_cmp_rater_cnt,
   sort_recom_cmp_rating
 )
 from synthesize_utils import synthesize_midi
-from io_utils import pickle_load, get_response_image
+from io_utils import pickle_load
 
 from flask_pymongo import PyMongo
 from pymongo.collection import ReturnDocument
 
 load_dotenv()
-setup_gpu(int(os.getenv('WEBAPP_GPUID')))
+setup_gpu(os.getenv('WEBAPP_GPUID'))
 model = load_model(os.getenv('WEBAPP_CKPT_PATH'))
 dset = load_dataset()
 app = Flask(__name__)
@@ -39,9 +36,7 @@ print ('[mongo]', mongo)
 
 @app.route('/')
 def hello():
-  entries = mongo_collection.find({})
-  for e in entries:
-    print (e)
+  print ('[status api] called')
   return jsonify({'data': 'Hello World'})
 
 @app.route('/get_init_sample', methods=['GET', 'POST'])
@@ -229,11 +224,25 @@ def download_audio():
   if not os.path.exists(audio_path):
     synthesize_midi(composed_date, composed_id)
 
+  attachment_filename='{}.mp3'.format(songname)
+
+  ##########################################################################
+  # use these codes when you don't have working FluidSynth & ffmpeg
+  # (fall back to sending MIDI)
+  ##########################################################################
+  audio_path = os.path.join(
+    './midis/composed/{}'.format(composed_date), 
+    '{}.midi'.format(composed_id)
+  )
+  attachment_filename='{}.midi'.format(songname)
+  ##########################################################################
+
+
   return send_file(
     audio_path,
     as_attachment=True,
-    attachment_filename='{}.mp3'.format(songname)
+    attachment_filename=attachment_filename
   )
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port=9060, use_reloader=False, threaded=True)
+  app.run(host='0.0.0.0', port=5000, use_reloader=False, threaded=True)

@@ -8,6 +8,4 @@ pydub
 midi2audio
 python-dotenv
 shortuuid
-pillow
-pypianoroll
-matplotlib
+numpy

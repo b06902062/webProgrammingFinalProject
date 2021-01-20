@@ -1,24 +1,13 @@
-import os, sys, random
-sys.path.append('../vae_transformer')
-
-import numpy as np
-from pypianoroll import plot_pianoroll, Track
-import matplotlib.pyplot as plt
+import os
 
 from io_utils import pickle_load
-from dataloader_full_song import REMIFullSongTransformerDataset
-from convert2midi_remi import event_to_midi
+from event2midi import event_to_midi
 
 import miditoolkit.midi.parser as midi_parser
 
-event2idx, idx2event = pickle_load('../vae_transformer/pickles/remi_wenyi_vocab.pkl')
+event2idx, idx2event = pickle_load('event_vocab/vocab.pkl')
 event2idx['PAD_None'] = len(event2idx)
 idx2event[ len(idx2event) ] = 'PAD_None'
-
-DEFAULT_TIME_QUANTUM = 30
-DEFAULT_RESOLUTION = 480
-DEFAULT_N_BARS = 8
-DEFAULT_PYPIANOROLL_DOWNS = [x for x in range(0, 64 * DEFAULT_N_BARS, 64)]
 
 ###########################
 # data utilities
@@ -45,30 +34,6 @@ def midi2json(midi_obj):
     })
   return notes
 
-def draw_pianoroll(notes_json, piece_name, outpath=None):
-  pianoroll = np.zeros(
-    (DEFAULT_RESOLUTION * 4 * DEFAULT_N_BARS // DEFAULT_TIME_QUANTUM, 128)
-  )
-
-  for n in notes_json:
-    st = n['start_tick'] // DEFAULT_TIME_QUANTUM
-    ed = (n['start_tick'] + n['duration']) // DEFAULT_TIME_QUANTUM - 1
-    pianoroll[st:ed, n['key']] = 96
-
-  plt.clf()
-  fig = plt.figure(figsize=(16, 4))
-  track = Track(name=piece_name, pianoroll=pianoroll)
-  plot_pianoroll(
-    plt.gca(), pianoroll, 
-    downbeats=DEFAULT_PYPIANOROLL_DOWNS, 
-    resolution=16, 
-    xtick='beat'
-  )
-  plt.title(piece_name)
-  if outpath is None:
-    outpath = 'pianorolls/orig.jpeg'
-  plt.savefig(outpath, bbox_inches='tight')
-
 
 ###########################
 # API helpers
@@ -88,8 +53,6 @@ def get_sample(dataset, idx, return_raw=False):
   notes_json = midi2json(midi_obj)
   rfreq_cls = data_dict['rhymfreq_cls_bar'].tolist()
   polyph_cls = data_dict['polyph_cls_bar'].tolist()
-
-  draw_pianoroll(notes_json, 'Original Piece')
 
   return tempo, notes_json, rfreq_cls, polyph_cls
 
