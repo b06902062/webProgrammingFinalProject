@@ -8,10 +8,9 @@ export function useProgressCanvas(){
   function progressClear(){
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    const halfGridSize = Math.floor(gridSize/2);
     ctx.restore();
     ctx.beginPath();
-    ctx.clearRect(0, 0, gridSize * n_grids, halfGridSize * nPitch);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.closePath();
   }
 
@@ -26,7 +25,7 @@ export function useProgressCanvas(){
     ]
     ctx.restore();
     ctx.beginPath();
-    ctx.clearRect(0, 0, gridSize * n_grids, halfGridSize * nPitch)
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight)
     
     const drawOneNote = (elem) => {
       ctx.restore();

@@ -30,6 +30,7 @@ import {
   DislikeFilled,
   CommentOutlined,
   StarFilled,
+  EditOutlined
 } from '@ant-design/icons';
 import { Space, Divider, Typography, Spin } from 'antd';
 // import { Button } from '@material-ui/core';
@@ -317,7 +318,7 @@ function App() {
     <div className="App">
       <body className="App-header">
         {recommendationPage?
-          <RecPage 
+          <RecPage
             id={recommandProps.composed_id}
             recommendations={recommandProps.recommended_songs}
             composedSong={{
@@ -335,10 +336,14 @@ function App() {
                 <div id="info-container" style={{width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
                   <div className='id-container'>
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'cornflowerblue'}}>Original</Text>
-                    <br/>
-                    {/* <Text strong style={{fontSize:buttonSize*0.45, color:'LightBlue'}}> Song </Text> */}
-                    <Text strong editable={(refId === -1)? {onChange:setRequestId, editing:false} : {onChange:setRequestId, tooltip:'type 0~99 to get another song'}}
-                      style={{fontSize:buttonSize*0.45, color:'LightBlue'}}> {(refId === -1)? 'Song' : `Song #${refId}`} </Text>
+                    <br/>                    
+                    <Text strong style={{fontSize:buttonSize*0.45, color:'LightBlue'}}
+                      editable={
+                        (refId === -1)? {editing:false, tooltip:'wait for initialization'} : 
+                          isPlayingInit? {editing:false, tooltip:'wait for audio playing'} : 
+                            {onChange:setRequestId, tooltip:'type 0~99 to get another song'}
+                      }
+                      > {(refId === -1)? 'Song' : `Song #${refId}`} </Text>
                   </div>
                   {hasRequested?
                   <>

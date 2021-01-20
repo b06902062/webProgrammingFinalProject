@@ -5,6 +5,7 @@ import {
   LockOutlined,
   RightCircleOutlined,
   LeftCircleOutlined,
+  QuestionCircleOutlined
 } from '@ant-design/icons';
 const { Text } = Typography;
 
@@ -17,10 +18,19 @@ function ButtonList(props){
             checkedChildren={<UnlockOutlined />}
             unCheckedChildren={<LockOutlined />}
             defaultChecked={props.locked} 
-            onClick={props.lockFunc}/>
+            onClick={props.lockFunc}
+            disabled={(!props.nowAPage)}/>
           {props.attrType === 'rhythm'?
-            <Text keyboard strong style={{ fontSize:props.buttonSize, color:'mediumvioletred'}}>Rhythm</Text> :
-            <Text keyboard strong style={{ fontSize:props.buttonSize, color:'MediumSeaGreen'}}>Polyph</Text> }
+            <Text keyboard strong 
+              style={{ fontSize:props.buttonSize, color:'mediumvioletred'}}
+              editable={{editing:false, tooltip:'Controls the "intensity" of rhythm in each bar', icon:<QuestionCircleOutlined />}}>
+              &nbsp;Rhythm </Text>
+            :
+            <Text keyboard strong 
+              style={{ fontSize:props.buttonSize, color:'MediumSeaGreen'}}
+              editable={{editing:false, tooltip:'Controls the "fullness" of harmony in each bar', icon:<QuestionCircleOutlined />}}>
+              &nbsp;Polyph </Text>
+            }
         </div>
         <div className="button-list" style={{ width: props.canvasWidth}}>
           {props.attrData.map((elem, index) => (
