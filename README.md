@@ -16,12 +16,12 @@
   Material-UI
   Axios
 2. Back end
-- Python
-- Flask
-- PyTorch
-- FluidSynth
+  - Python
+  - Flask
+  - PyTorch
+  - FluidSynth
 3. Database
-- MongoDB
-- PyMongo
+  - MongoDB
+  - PyMongo
 ### 心得:
 寫報告寫到還沒選課，有人有推薦的課嗎?
