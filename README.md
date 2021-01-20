@@ -11,7 +11,21 @@
 3. 讓使用者瞭解 AI 音樂的潛能，評分結果可作為模型訓練資料的 Crowdsourcing
 
 ## 介紹
-詳細圖文介紹可見上方投影片連結，這邊講
+這邊主要介紹此服務對於AI創作音樂的可調參數與對應效果。
+以Song #4作為範例:
+![Alt text](./graph/originExample.png "Original Song #4")
+可以看到每個小結底下都有兩個參數，分別是控制*節奏緊湊度*的 Rhythm 與 控制*和聲飽滿度*的 Polyph。
+將其調到各種極端值後可見以下結果。
+![Alt text](./graph/composedExample.png "Composed Result")
+還看不出效果的話沒有關係，我們將兩張圖放在一起做比較會發現:
+1. 第一個小節
+![Alt text](./graph/bar1compare.png "bar 1")
+2. 第二個小節
+![Alt text](./graph/bar2compare.png "bar 2")
+3. 第三個小節
+![Alt text](./graph/bar3compare.png "bar 3")
+4. 第四個小節
+![Alt text](./graph/bar4compare.png "bar 4")
 
 ## 使用工具
 ### Front end
