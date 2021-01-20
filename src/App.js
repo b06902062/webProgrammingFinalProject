@@ -340,30 +340,37 @@ function App() {
                     <Text strong editable={(refId === -1)? {onChange:setRequestId, editing:false} : {onChange:setRequestId, tooltip:'type 0~99 to get another song'}}
                       style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> {(refId === -1)? '' : `#${refId}`} </Text>
                   </div>
-                  <div id="play">
-                    <button className="my-button1" style={{fontSize: buttonSize ,color: isPlayingInit? 'lightpink':'aquamarine'}} 
-                      onClick={playButton("i")} disabled={refId===-1}>
-                      {isPlayingInit? 
-                      <PauseCircleFilled title="Pause"/> : 
-                      <PlayCircleFilled title="Play"/>}
+                  {hasRequested?
+                  <>
+                    <div id="play">
+                      <button className="my-button1" style={{fontSize: buttonSize ,color: isPlayingInit? 'lightpink':'aquamarine'}} 
+                        onClick={playButton("i")} disabled={!hasRequested}>
+                        {isPlayingInit? 
+                        <PauseCircleFilled title="Pause"/> : 
+                        <PlayCircleFilled title="Play"/>}
                       </button>
                     </div>
-                  <div id="back2default">
-                    <button className="my-button1 color3" style={{fontSize: buttonSize}} onClick={defaultToggleFunc} disabled={!hasRequested}>
-                      <RedoOutlined title="Set Tuners to Default"/>
+                    <div id="back2default">
+                      <button className="my-button1 color3" style={{fontSize: buttonSize}} onClick={defaultToggleFunc} disabled={!hasRequested}>
+                        <RedoOutlined title="Set Tuners to Default"/>
                       </button>
                     </div>
-                  <div id="request">
+                    <div id="request">
                       <button 
                         className={isComposing ? "my-button1 color1 spinner" : "my-button1 color1"}
                         style={{fontSize: buttonSize}}
                         onClick={composeFunc} 
-                        disabled={isComposing||!hasRequested}
-                      >
-                        {/* <SlidersFilled title={hasComposed? "Recompose":"Compose"}/>  */}
+                        disabled={isComposing||!hasRequested}>
                         <MusicNoteRounded style={{fontSize: buttonSize}} titleAccess={isComposing? "Composing..." : hasComposed? "Recompose" : "Compose"}/>
                       </button>
-                  </div>
+                    </div>
+                  </>
+                  :
+                  <>
+                    <div style={{height:buttonSize}}/>
+                    <Spin tip="Loading..."/>
+                  </>}
+                  
                   { hasComposed && !isComposing &&
                     <div id="nextpage">
                       <button className="my-button1 color2"
