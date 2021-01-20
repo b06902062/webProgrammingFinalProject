@@ -13,24 +13,32 @@ function ButtonList(props){
   return(
     <div style={{display:'flex'}}>
         <div style={{ width: 0.8*(props.windowWidth-props.canvasWidth) }}>
-          <Switch
+          <Text style={{ fontSize:props.buttonSize}}
+            editable={{icon:<QuestionCircleOutlined/>, editing:false, 
+            tooltip:(props.attrType === 'rhythm') ? 
+            'Controls the "intensity" of rhythm in each bar':
+            'Controls the "fullness" of harmony in each bar'}}/>
+          {props.attrType === 'rhythm'?
+          <Text keyboard strong 
+            style={{ fontSize:props.buttonSize, color:'mediumvioletred'}}
+            >Rhythm</Text>
+            :
+          <Text keyboard strong 
+            style={{ fontSize:props.buttonSize, color:'MediumSeaGreen'}}
+            >Polyph</Text>
+          }
+            <Switch
             size="small"
-            checkedChildren={<UnlockOutlined />}
-            unCheckedChildren={<LockOutlined />}
+            checkedChildren={<UnlockOutlined 
+              title={(props.attrType === 'rhythm') ? 
+              'Unlock all Rhythm tuners':'Unlock all Polyph tuners'}/>}
+            unCheckedChildren={<LockOutlined 
+              title={(props.attrType === 'rhythm') ? 
+              'Lock Rhythm tuners 2~8 (change according to first tuner)':
+              'Lock Polyph tuners 2~8 (change according to first tuner)'}/>}
             defaultChecked={props.locked} 
             onClick={props.lockFunc}
             disabled={(!props.nowAPage)}/>
-          {props.attrType === 'rhythm'?
-            <Text keyboard strong 
-              style={{ fontSize:props.buttonSize, color:'mediumvioletred'}}
-              editable={{editing:false, tooltip:'Controls the "intensity" of rhythm in each bar', icon:<QuestionCircleOutlined />}}>
-              &nbsp;Rhythm </Text>
-            :
-            <Text keyboard strong 
-              style={{ fontSize:props.buttonSize, color:'MediumSeaGreen'}}
-              editable={{editing:false, tooltip:'Controls the "fullness" of harmony in each bar', icon:<QuestionCircleOutlined />}}>
-              &nbsp;Polyph </Text>
-            }
         </div>
         <div className="button-list" style={{ width: props.canvasWidth}}>
           {props.attrData.map((elem, index) => (

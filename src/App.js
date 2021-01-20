@@ -30,7 +30,7 @@ import {
   DislikeFilled,
   CommentOutlined,
   StarFilled,
-  EditOutlined
+  SearchOutlined
 } from '@ant-design/icons';
 import { Space, Divider, Typography, Spin } from 'antd';
 // import { Button } from '@material-ui/core';
@@ -339,9 +339,8 @@ function App() {
                     <br/>                    
                     <Text strong style={{fontSize:buttonSize*0.45, color:'LightBlue'}}
                       editable={
-                        (refId === -1)? {editing:false, tooltip:'wait for initialization'} : 
-                          isPlayingInit? {editing:false, tooltip:'wait for audio playing'} : 
-                            {onChange:setRequestId, tooltip:'type 0~99 to get another song'}
+                        ((refId===-1)||isPlayingInit)? {editing:false, icon:<div/>} : 
+                          {onChange:setRequestId, tooltip:'Enter 0~99 to pick a song', icon:<SearchOutlined/>}
                       }
                       > {(refId === -1)? 'Song' : `Song #${refId}`} </Text>
                   </div>
