@@ -9,13 +9,13 @@
 3. 讓使用者瞭解 AI 音樂的潛能，評分結果可作為模型訓練資料的 Crowdsourcing
 ### 使用工具:
 1. Front end
-- React
-- HTML5 Canvas
-- Soundfont Player
-- Ant Design
-- Material-UI
-- Axios
-Back end
+  React
+  HTML5 Canvas
+  Soundfont Player
+  Ant Design
+  Material-UI
+  Axios
+2. Back end
 - Python
 - Flask
 - PyTorch
