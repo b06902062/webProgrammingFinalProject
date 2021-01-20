@@ -9,19 +9,19 @@
 3. 讓使用者瞭解 AI 音樂的潛能，評分結果可作為模型訓練資料的 Crowdsourcing
 ### 使用工具:
 #### Front end
-    1. React
-    2. HTML5 Canvas
-    3. Soundfont Player
-    4. Ant Design
-    5. Material-UI
-    6. Axios
+  1. React
+  2. HTML5 Canvas
+  3. Soundfont Player
+  4. Ant Design
+  5. Material-UI
+  6. Axios
 #### Back end
-    1. Python
-    2. Flask
-    3. PyTorch
-    4. FluidSynth
+  1. Python
+  2. Flask
+  3. PyTorch
+  4. FluidSynth
 #### Database
-    1. MongoDB
-    2. PyMongo
+  1. MongoDB
+  2. PyMongo
 ### 心得:
 寫報告寫到還沒選課，有人有推薦的課嗎?
