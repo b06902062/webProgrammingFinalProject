@@ -1,0 +1,12 @@
+torch==1.6.0
+miditoolkit
+flask
+flask-cors
+flask-pymongo
+pymongo
+pydub
+midi2audio
+python-dotenv
+shortuuid
+pillow
+pypianoroll
