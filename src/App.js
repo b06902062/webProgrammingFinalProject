@@ -311,7 +311,7 @@ function App() {
   }, [requestId])
 
 
-  const buttonSize = Math.min(Math.floor(canvasHeight*0.12), 50)
+  const buttonSize = Math.max(Math.min(Math.floor(canvasHeight*0.12), 50), 16)
   
   return (
     <div className="App">
@@ -332,13 +332,13 @@ function App() {
           <>
             <div style={{position: "relative", width:window_width, height:(canvasHeight+0.1*window_height)}}>
               {originPage?
-                <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
+                <div id="info-container" style={{width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
                   <div className='id-container'>
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'cornflowerblue'}}>Original</Text>
                     <br/>
-                    <Text strong style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> Song </Text>
+                    {/* <Text strong style={{fontSize:buttonSize*0.45, color:'LightBlue'}}> Song </Text> */}
                     <Text strong editable={(refId === -1)? {onChange:setRequestId, editing:false} : {onChange:setRequestId, tooltip:'type 0~99 to get another song'}}
-                      style={{fontSize:buttonSize*0.5, color:'LightBlue'}}> {(refId === -1)? '' : `#${refId}`} </Text>
+                      style={{fontSize:buttonSize*0.45, color:'LightBlue'}}> {(refId === -1)? 'Song' : `Song #${refId}`} </Text>
                   </div>
                   {hasRequested?
                   <>
@@ -383,11 +383,11 @@ function App() {
                   }
                 </div>
                 :
-                <div id="info-container" style={{overflow:'hidden', width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
+                <div id="info-container" style={{width:0.8 * (window_width - canvasWidth), height:canvasHeight}}>
                   <div className='id-container'>
                     <Text strong style={{fontSize:buttonSize*0.6,  color:'CornflowerBlue'}}>Yours</Text>
                     <br/>
-                    <Text strong style={{fontSize:buttonSize*0.5,  color:'LightBlue'}}>Song&nbsp;{(refId == -1)? '' : `#${refId}`}</Text>
+                    <Text strong style={{fontSize:buttonSize*0.45,  color:'LightBlue'}}>Song&nbsp;{(refId == -1)? '' : `#${refId}`}</Text>
                   </div>
                   <div id="play">
                     <button className="my-button1" style={{fontSize: buttonSize, color: isPlayingComposed? 'lightpink':'aquamarine'}} onClick={playButton("c")}>
@@ -452,13 +452,13 @@ function App() {
                 toggleFunc={toggleFunc} lockFunc={rLockFunc} 
                 locked={rLock} attrData={passedRhythm}
                 windowWidth={window_width} canvasWidth={canvasWidth}
-                nowAPage={originPage}
+                nowAPage={originPage} buttonSize={Math.floor(buttonSize*0.6)}
                 attrType="rhythm"/>
               <ButtonList 
                 toggleFunc={toggleFunc} lockFunc={pLockFunc}
                 locked={pLock} attrData={passedPolyph}
                 windowWidth={window_width} canvasWidth={canvasWidth}
-                nowAPage={originPage}
+                nowAPage={originPage} buttonSize={Math.floor(buttonSize*0.6)}
                 attrType="polyph"/>
             </Space>
           </>

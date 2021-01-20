@@ -19,19 +19,19 @@ function ButtonList(props){
             defaultChecked={props.locked} 
             onClick={props.lockFunc}/>
           {props.attrType === 'rhythm'?
-            <Text keyboard strong style={{color:'mediumslateblue'}}>Rhythm</Text> :
-            <Text keyboard strong style={{color:'MediumSeaGreen'}}>Polyph</Text> }
+            <Text keyboard strong style={{ fontSize:props.buttonSize, color:'mediumvioletred'}}>Rhythm</Text> :
+            <Text keyboard strong style={{ fontSize:props.buttonSize, color:'MediumSeaGreen'}}>Polyph</Text> }
         </div>
         <div className="button-list" style={{ width: props.canvasWidth}}>
           {props.attrData.map((elem, index) => (
             <div key={`${props.attrType[0]}_${index}`}>
               <button 
-                className="my-button2"
+                className="my-button2" style={{fontSize:props.buttonSize}}
                 onClick={props.toggleFunc(index, -1, props.attrType)}
                 disabled={(!props.nowAPage) || (elem <= 0) || (props.locked && index !== 0)}>
                   <LeftCircleOutlined title="Down"/>
               </button>
-              <Text strong code //style={{fontSize:'16px'}}
+              <Text strong code style={{fontSize:props.buttonSize}}
                 type={
                   elem>5?
                     "danger":elem<2?
@@ -39,7 +39,7 @@ function ButtonList(props){
                 }
               >{Math.max(Math.min(elem, 7), 0)}</Text>
               <button
-                className="my-button2"
+                className="my-button2" style={{fontSize:props.buttonSize}}
                 onClick={props.toggleFunc(index, +1, props.attrType)}
                 disabled={(!props.nowAPage) || (elem >= 7) || (props.locked && index !== 0)}>
                   <RightCircleOutlined title="Up"/>
