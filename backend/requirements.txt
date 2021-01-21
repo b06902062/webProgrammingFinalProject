@@ -4,6 +4,7 @@ flask
 flask-cors
 flask-pymongo
 pymongo
+miditoolkit
 pydub
 midi2audio
 python-dotenv
