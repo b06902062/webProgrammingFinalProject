@@ -2,7 +2,7 @@
 ### (Group 99) MuseOptimus
 #### Deployed: https://musicai.citi.sinica.edu.tw/museoptimus
 #### Demo 影片: https://www.facebook.com/100002809540176/videos/3060221340748154/
-#### 投影片: https://slides.com/slseanwu/museoptimus/fullscreen#/2/3
+#### 投影片: https://slides.com/slseanwu/museoptimus/fullscreen
 #### 使用/操作方式: 點擊連結即可開始
 
 ## Project Goal
@@ -11,10 +11,10 @@
 3. 讓使用者瞭解 AI 音樂的潛能，評分結果可作為模型訓練資料的 Crowdsourcing
 
 ## 介紹
-#### 這邊主要介紹此服務對於AI創作音樂的可調參數與對應效果。
+#### 這邊主要介紹此服務對於 AI 創作音樂的可調參數與對應效果。
 ### 以Song #4作為範例:
 ![Alt text](./graph/originExample.png "Original Song #4")
-#### 可以看到每個小結底下都有兩個參數，分別是控制**節奏緊湊度**的 Rhythm 與 控制**和聲飽滿度**的 Polyph。
+#### 可以看到每個小節底下都有兩個參數，分別是控制**節奏緊湊度**的 Rhythm 與 控制**和聲飽滿度**的 Polyph。
 #### 分別會對原曲的該個小節造成不同影響，將其調到各種極端值後可見以下結果。
 ![Alt text](./graph/composedExample.png "Composed Result")
 #### 有些人可能已經感受到這兩個參數的影響了，還看不出效果的話沒有關係，我們進一步看下去。
@@ -26,26 +26,38 @@
   ![Alt text](./graph/bar2compare.png "bar 2")
 #### 第三個小節，音符變得短而急促
   ![Alt text](./graph/bar3compare.png "bar 3")
-#### 第四個小節，每個音符都形單影薄
+#### 第四個小節，每個音符都形單影隻
   ![Alt text](./graph/bar4compare.png "bar 4")
 #### 整個比較下來可以發現，創作出來的歌與原曲脈絡相仿，但隨著 Rhythm(節奏/橫向) 與 Polyph(和聲/縱向) 的調整，歌曲會跟著出現與對應的變化
 
 ## 使用工具
 ### Front end
-  1. React
-  2. HTML5 Canvas
-  3. Soundfont Player
-  4. Ant Design
-  5. Material-UI
-  6. Axios
+  1. React  
+     -- component 顯示邏輯
+  2. HTML5 Canvas  
+     -- 動態 pianoroll 繪製
+  3. Soundfont Player  
+     -- 播放後端以 JSON 傳回的音樂資料
+  4. Ant Design  
+     -- 排版格式、按鈕、icon
+  5. Material-UI  
+     -- 部分按鈕、icon
+  6. Axios  
+     -- request 發送
 ### Back end
-  1. Python
-  2. Flask
-  3. PyTorch
-  4. FluidSynth
+  1. Python3
+  2. Flask  
+     -- web service
+  3. PyTorch  
+     -- 運行 AI 作曲 model
+  4. miditoolkit  
+     -- model 表示法與 midi 音樂格式間轉換
+  5. FluidSynth (+midi2audio) & ffmpeg (+pydub)  
+     -- 合成音檔、轉檔成 mp3 提供下載
 ### Database
   1. MongoDB
-  2. PyMongo
+  2. PyMongo  
+     -- 用 python API 對資料庫進行操作
 
 ## 分工
 - b06902062 陳法熏 - 整個前端
