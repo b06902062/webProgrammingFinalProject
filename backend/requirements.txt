@@ -10,3 +10,4 @@ midi2audio
 python-dotenv
 shortuuid
 numpy
+dnspython

@@ -2,9 +2,10 @@ import os, sys, random
 sys.path.append('./torch_mock')
 
 import torch
+
 from generate_utils import get_latent_embedding_fast, generate_on_latent_ctrl_vanilla
 from io_utils import numpy_to_tensor
-
+from mock_ai_composer import MockAIComposer
 gpuid = None
 
 def setup_gpu(_gpuid):
@@ -17,9 +18,15 @@ def setup_gpu(_gpuid):
 
 def load_model(ckpt_path):
   if gpuid is not None:
-    model = torch.load(ckpt_path).cuda(gpuid)
+    try:
+      model = torch.load(ckpt_path).cuda(gpuid)
+    except:
+      model = MockAIComposer().cuda(gpuid)
   else:
-    model = torch.load(ckpt_path)
+    try:
+      model = torch.load(ckpt_path)
+    except:
+      model = MockAIComposer()
 
   model.use_attr_cls = True
   model.eval()
