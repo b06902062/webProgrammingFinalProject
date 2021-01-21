@@ -42,24 +42,28 @@ python3 main.py
 * [ffmpeg](https://ffmpeg.org/)
 
 ## 介紹
-#### 這邊主要介紹此服務對於 AI 創作音樂的可調參數與對應效果。
+     這邊主要介紹此服務對於 AI 創作音樂的可調參數與對應效果。
 ### 以Song #4作為範例:
-![Alt text](./graph/originExample.png "Original Song #4")
-#### 可以看到每個小節底下都有兩個參數，分別是控制**節奏緊湊度**的 Rhythm 與 控制**和聲飽滿度**的 Polyph。
-#### 分別會對原曲的該個小節造成不同影響，將其調到各種極端值後可見以下結果。
-![Alt text](./graph/composedExample.png "Composed Result")
-#### 有些人可能已經感受到這兩個參數的影響了，還看不出效果的話沒有關係，我們進一步看下去。
+   ![Alt text](./graph/originExample.png "Original Song #4")
+   可以看到每個小節底下都有兩個參數，分別是控制**節奏緊湊度**的 Rhythm 與 控制**和聲飽滿度**的 Polyph。
+   分別會對原曲的該個小節造成不同影響，將其調到各種極端值後可見以下結果。
+   ![Alt text](./graph/composedExample.png "Composed Result")
+   有些人可能已經感受到這兩個參數的影響了，還看不出效果的話沒有關係，我們進一步看下去。
 
 ### 我們將兩張圖放在一起比較會發現:
-#### 第一個小節，可以明顯地看到新的曲子照著原曲的脈絡*長胖了*，也就是一次按下去的音變多了、和聲變得飽和
-![Alt text](./graph/bar1compare.png "bar 1")
-#### 第二個小節大致與原曲脈絡一致，但是音符長度變得很長
-  ![Alt text](./graph/bar2compare.png "bar 2")
-#### 第三個小節，音符變得短而急促
-  ![Alt text](./graph/bar3compare.png "bar 3")
-#### 第四個小節，每個音符都形單影隻
-  ![Alt text](./graph/bar4compare.png "bar 4")
-#### 整個比較下來可以發現，創作出來的歌與原曲脈絡相仿，但隨著 Rhythm(節奏/橫向) 與 Polyph(和聲/縱向) 的調整，歌曲會跟著出現與對應的變化
+   第一個小節，可以明顯地看到新的曲子照著原曲的脈絡*長胖了*，也就是一次按下去的音變多了、和聲變得飽和
+   ![Alt text](./graph/bar1compare.png "bar 1")
+   
+   第二個小節大致與原曲脈絡一致，但是音符長度變得很長
+   ![Alt text](./graph/bar2compare.png "bar 2")
+   
+   第三個小節，音符變得短而急促
+   ![Alt text](./graph/bar3compare.png "bar 3")
+   
+   第四個小節，每個音符都形單影隻
+   ![Alt text](./graph/bar4compare.png "bar 4")
+
+   整個比較下來可以發現，創作出來的歌與原曲脈絡相仿，但隨著 Rhythm(節奏/橫向) 與 Polyph(和聲/縱向) 的調整，歌曲會跟著出現與對應的變化
 
 ## 使用工具
 ### Front end
