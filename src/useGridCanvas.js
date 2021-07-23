@@ -10,13 +10,13 @@ export function draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar){
     let flag = Math.floor(i/halfGridSize)%12;
     ctx.restore();
     ctx.globalAlpha = 1;
-    if(flag === 1 || flag === 3 || flag === 6 || flag === 8 || flag === 10){
+    if(flag === 4 || flag === 6 || flag === 9 || flag === 11 || flag === 1){
       ctx.fillStyle = 'rgba(30, 30, 30, 1)';
-      ctx.fillRect(0, i, canvasWidth, 1);
+      ctx.fillRect(0, canvasHeight-i-1, canvasWidth, 1);
     }
     else{
       ctx.fillStyle = 'rgba(60, 60, 60, 1)';
-      ctx.fillRect(0, i, canvasWidth, 1);
+      ctx.fillRect(0, canvasHeight-i-1, canvasWidth, 1);
     }
   }
 
@@ -39,18 +39,18 @@ export function draw(ctx, canvasWidth, canvasHeight, gridSize, n_grids_per_bar){
   ctx.lineTo(canvasWidth - 0.6, canvasHeight);
   ctx.stroke();
 
-  for (let i = 0; i < canvasHeight; i += halfGridSize) {
-    ctx.lineWidth = (1.0+((i/halfGridSize%12)===4)*5)*0.1; // [myRef]
-    if ((i/halfGridSize%12)===3)
-      ctx.strokeStyle = 'gray';
-    else
-      continue; //ctx.strokeStyle = '#717171';'#F5927E'
-    ctx.beginPath();
-    ctx.moveTo(0, i + 0.5);
-    ctx.lineTo(canvasWidth, i + 0.5);
-    ctx.stroke();
-  }
-  ctx.restore();
+  // for (let i = 0; i < canvasHeight; i += halfGridSize) {
+  //   ctx.lineWidth = (1.0+((i/halfGridSize%12)===4)*5)*0.1; // [myRef]
+  //   if ((i/halfGridSize%12)===3)
+  //     ctx.strokeStyle = 'gray';
+  //   else
+  //     continue; //ctx.strokeStyle = '#717171';'#F5927E'
+  //   ctx.beginPath();
+  //   ctx.moveTo(0, i + 0.5);
+  //   ctx.lineTo(canvasWidth, i + 0.5);
+  //   ctx.stroke();
+  // }
+  // ctx.restore();
 };
 
 export function useGridCanvas(recPage){
