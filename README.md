@@ -2,6 +2,7 @@
 ### (Group 99) MuseOptimus
 #### Deployed at: （後端遷移中）
 #### Demo 影片: https://www.facebook.com/100002809540176/videos/3060221340748154/
+#### Demo 影片(片段): https://youtu.be/3ubuvRcg0oI
 #### 投影片: https://slides.com/slseanwu/museoptimus/fullscreen
 #### 使用/操作方式: 點擊連結即可開始
 
